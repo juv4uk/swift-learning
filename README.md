@@ -1,12 +1,23 @@
 # Swift крок за кроком
 
-Україномовний практичний курс **Swift 6**: від перших програм на Windows до нативної розробки для macOS, iOS та iPadOS на Mac.
+Україномовний практичний курс **Swift 6**: від перших програм на Windows, Linux або macOS до нативної розробки для Apple-платформ на Mac.
 
 > Мета курсу — не завчити синтаксис, а навчитися самостійно читати, писати, перевіряти й пояснювати Swift-код.
 
 ## Для кого цей репозиторій
 
-Курс розрахований на початківця, який уже знайомий із загальними поняттями програмування, але ще не працював зі Swift. Перші сім тижнів можна проходити на Windows або macOS. Для Xcode, SwiftUI та запуску застосунків Apple потрібен Mac.
+Курс підходить для тих, хто навчається на Windows, Linux або macOS. **Перші сім тижнів і консольний підсумковий проєкт можна виконати на будь-якій із цих систем.** Mac не є умовою вивчення Swift.
+
+| Можливість | Windows | Linux | macOS |
+|---|:---:|:---:|:---:|
+| Вивчення мови та стандартної бібліотеки | ✓ | ✓ | ✓ |
+| Консольні програми та бібліотеки | ✓ | ✓ | ✓ |
+| Swift Package Manager | ✓ | ✓ | ✓ |
+| XCTest і власні тести | ✓ | ✓ | ✓ |
+| JSON, файли, async/await | ✓ | ✓ | ✓ |
+| Xcode та SwiftUI для Apple-платформ | — | — | ✓ |
+
+На Windows інтерактивний REPL/JIT має обмеження, тому в курсі для окремих файлів використовується компіляція через `swiftc`. Це не заважає вивчати мову та збирати пакети.
 
 ## Навчальний маршрут — 8 тижнів
 
@@ -19,47 +30,58 @@
 | 5 | Closures, `map`, `filter`, `reduce`, помилки | Компактна обробка даних |
 | 6 | ARC, посилання, `async/await`, `Task`, `actor` | Розуміння пам'яті й конкурентності |
 | 7 | Swift Package Manager, модулі, JSON, файли, XCTest | Структурований пакет із тестами |
-| 8 | Підсумковий проєкт і перехід до Xcode/SwiftUI | Консольний застосунок і план наступного етапу |
+| 8 | Підсумковий проєкт і наступні напрями | Кросплатформний консольний застосунок |
 
 Детальний план: [CURRICULUM.md](CURRICULUM.md). Матеріали: [lessons/](lessons/).
 
-## Швидкий старт на Windows
+## Швидкий старт
 
-У тебе вже встановлений Swift 6.4.2. Відкрий PowerShell у корені репозиторію:
+Спершу перевір, що Swift встановлений:
 
-```powershell
+```bash
 swift --version
 swiftc --version
 ```
 
-Для першого прикладу використовуй компілятор `swiftc`, а не JIT-запуск `swift main.swift`:
+Клонуй репозиторій:
+
+```bash
+git clone https://github.com/juv4uk/swift-learning.git
+cd swift-learning
+```
+
+### Windows (PowerShell)
 
 ```powershell
 .\scripts\run-example.ps1 01-hello
-```
-
-Або вручну:
-
-```powershell
-New-Item -ItemType Directory -Force build | Out-Null
-swiftc .\examples\01-hello\main.swift -o .\build\lesson.exe
-.\build\lesson.exe
-```
-
-На Windows потрібні компоненти MSVC C++ toolchain та Windows SDK. Інструкція: [docs/SETUP-WINDOWS.md](docs/SETUP-WINDOWS.md).
-
-## Швидкий старт на Mac
-
-Після придбання Mac встанови Xcode з Mac App Store, відкрий Terminal у корені репозиторію та виконай:
-
-```bash
-swift --version
 swift build
 swift run
 swift test
 ```
 
-Інструкція: [docs/SETUP-MACOS.md](docs/SETUP-MACOS.md).
+Для Windows потрібні MSVC C++ Build Tools і Windows SDK. Деталі: [docs/SETUP-WINDOWS.md](docs/SETUP-WINDOWS.md).
+
+### Linux (Bash)
+
+```bash
+./scripts/run-example.sh 01-hello
+swift build
+swift run
+swift test
+```
+
+Встановлення через Swiftly та вимоги до дистрибутивів: [docs/SETUP-LINUX.md](docs/SETUP-LINUX.md).
+
+### macOS (Terminal)
+
+```bash
+./scripts/run-example.sh 01-hello
+swift build
+swift run
+swift test
+```
+
+Для Xcode та SwiftUI: [docs/SETUP-MACOS.md](docs/SETUP-MACOS.md).
 
 ## Як проходити урок
 
@@ -75,16 +97,18 @@ swift test
 ## Структура репозиторію
 
 ```text
-Sources/                 маленький Swift Package, який можна зібрати й протестувати
+Sources/                 навчальний Swift Package
 Tests/                   автоматичні тести
 examples/                незалежні приклади для кожного тижня
 lessons/                 пояснення, вправи й критерії самоперевірки
-scripts/                 запуск прикладів у Windows і macOS
-docs/                    інструкції з налаштування середовища
+scripts/                 запуск прикладів у Windows і Bash-системах
+docs/                    інструкції для Windows, Linux і macOS
 CURRICULUM.md             календар на 8 тижнів
 ```
 
 ## Команди Swift Package Manager
+
+Ці команди однакові в PowerShell, Bash і macOS Terminal:
 
 ```bash
 swift build       # зібрати пакет
@@ -97,7 +121,8 @@ swift test        # запустити тести
 - Пояснення та завдання — українською; назви API й ідентифікатори — у звичному для Swift стилі англійською.
 - Кожен приклад має бути невеликим і самодостатнім.
 - Спочатку стандартна бібліотека Swift; зовнішні залежності додаються лише за потреби.
-- Не переходити до SwiftUI, доки не зрозумілі типи, функції, структури, протоколи та помилки.
+- Основний курс не залежить від Apple SDK і має працювати на Windows, Linux та macOS.
+- Xcode та SwiftUI — окремий наступний напрям для тих, хто має Mac.
 - Помилки компілятора — частина навчання: важливо навчитися читати їх, а не боятися.
 
 ## Ліцензія

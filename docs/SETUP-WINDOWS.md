@@ -1,29 +1,49 @@
 # Налаштування Swift на Windows
 
-## 1. Перевір компілятор
+Windows — повноцінна платформа для проходження основного курсу: компілятор, Swift Package Manager, консольні програми, бібліотеки й тести. Для Xcode та SwiftUI потрібен Mac, але для вивчення самої мови — ні.
+
+## 1. Встанови компоненти Windows
+
+Swift для Windows використовує MSVC ABI. Потрібні Visual Studio 2022 Build Tools або Visual Studio з компонентом **Desktop development with C++**, MSVC C++ build tools відповідної архітектури та Windows SDK.
+
+Офіційна інструкція: [Swift для Windows](https://www.swift.org/install/windows/). Вона містить актуальні команди WinGet та перелік залежностей. Якщо компілятор не знаходить linker або SDK, спочатку перевір ці компоненти.
+
+## 2. Встанови та перевір Swift
+
+Встанови стабільний toolchain з офіційної сторінки Swift.org, потім відкрий новий PowerShell:
 
 ```powershell
 swift --version
 swiftc --version
+swift package --version
 ```
 
-У цьому курсі рекомендовано Swift 6.4 або новішу сумісну версію.
+У цьому курсі рекомендовано Swift 6.4.2 або новішу сумісну стабільну версію.
 
-## 2. Перевір інструменти C/C++
+## 3. Отримай курс
 
-Офіційний Windows toolchain Swift використовує MSVC ABI. Для збирання зазвичай потрібні Visual Studio Build Tools із компонентом **Desktop development with C++** та Windows SDK. Якщо `swiftc` не знаходить linker або SDK, перевір ці компоненти.
+```powershell
+git clone https://github.com/juv4uk/swift-learning.git
+Set-Location .\swift-learning
+```
 
-## 3. Перший приклад
-
-У PowerShell із кореня репозиторію:
+## 4. Перший приклад
 
 ```powershell
 .\scripts\run-example.ps1 01-hello
 ```
 
-Скрипт використовує `swiftc`, тому не залежить від JIT-режиму команди `swift file.swift`.
+Скрипт використовує `swiftc`, тому не залежить від JIT-режиму команди `swift main.swift`.
 
-## 4. Зібрати пакет
+За бажанням скомпілюй файл вручну:
+
+```powershell
+New-Item -ItemType Directory -Force build | Out-Null
+swiftc .\examples\01-hello\main.swift -o .\build\lesson.exe
+.\build\lesson.exe
+```
+
+## 5. Збери пакет і запусти тести
 
 ```powershell
 swift build
@@ -31,14 +51,17 @@ swift run
 swift test
 ```
 
-Якщо команда завершується помилкою, збережи повний текст першої помилки компілятора або linker. Не намагайся виправляти її випадковим перевстановленням усіх компонентів.
+## 6. Редактор
 
-## 5. Редактор
+Visual Studio Code зі Swift extension може бути зручним редактором. SourceKit-LSP надає мовні функції редактору, який підтримує Language Server Protocol. Редактор не замінює компілятор, MSVC та Windows SDK.
 
-Visual Studio Code зі Swift extension може бути зручним редактором. Редактор не замінює компілятор і Windows SDK.
+## Обмеження та можливості
 
-## Обмеження
+- Усі основні теми курсу, приклади, пакети й тести можна виконувати на Windows.
+- У Swift для Windows немає інтерактивного REPL, тому використовуй `swiftc` або Swift Package Manager.
+- Xcode та SwiftUI для нативних застосунків Apple потребують macOS.
+- Приклад `08-errors-async` використовує `@main`, тому скрипт автоматично додає `-parse-as-library`.
 
-Swift на Windows підходить для вивчення мови, консольних програм, бібліотек і пакетів. Для Xcode, SwiftUI та створення нативних застосунків Apple потрібен Mac.
-
-Примітка: приклад `08-errors-async` використовує `@main`, тому скрипт автоматично додає `-parse-as-library`. Для решти прикладів використовується звичайний режим компіляції.
+Корисні сторінки:
+- [Встановлення Swift на Windows](https://www.swift.org/install/windows/)
+- [Підтримувані платформи](https://www.swift.org/platform-support/)
