@@ -3,6 +3,7 @@ param(
     [ValidateSet(
         "01-hello",
         "01-basics-exercises",
+        "01-basics-exercises",
         "02-values",
         "03-conditions-loops",
         "04-functions",

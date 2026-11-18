@@ -32,6 +32,22 @@ func printSummary<T: Describable>(of value: T) {
 
 `T: Describable` означає, що `T` має відповідати протоколу `Describable`.
 
+## Запуск прикладу
+
+Windows / PowerShell:
+
+```powershell
+.\scripts\run-example.ps1 07-protocols-generics
+```
+
+Linux / macOS:
+
+```bash
+./scripts/run-example.sh 07-protocols-generics
+```
+
+Протоколи й generics — можливості мови, а не Apple framework: цей код не потребує Mac.
+
 ## Вправи
 
 1. Створи протокол `IdentifiableByName` з властивістю `name`.

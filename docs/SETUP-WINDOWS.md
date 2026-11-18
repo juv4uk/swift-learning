@@ -4,9 +4,29 @@ Windows — повноцінна платформа для проходженн�
 
 ## 1. Встанови компоненти Windows
 
-Swift для Windows використовує MSVC ABI. Потрібні Visual Studio 2022 Build Tools або Visual Studio з компонентом **Desktop development with C++**, MSVC C++ build tools відповідної архітектури та Windows SDK.
+Swift для Windows використовує MSVC ABI. Окрім Swift toolchain, встанови:
 
-Офіційна інструкція: [Swift для Windows](https://www.swift.org/install/windows/). Вона містить актуальні команди WinGet та перелік залежностей. Якщо компілятор не знаходить linker або SDK, спочатку перевір ці компоненти.
+- **Visual Studio 2022 Build Tools** або Visual Studio з компонентом **Desktop development with C++**;
+- MSVC v143 C++ build tools для архітектури твого комп'ютера;
+- Windows 11 SDK (Swift.org наводить 10.0.22000 як базовий компонент; новіший SDK також можна використовувати);
+- **Python 3.10.x** і **Git for Windows**;
+- увімкни **Developer Mode** у налаштуваннях Windows.
+
+Офіційні деталі та точні component ID: [ручне встановлення](https://www.swift.org/install/windows/manual/) та [встановлення через WinGet](https://www.swift.org/install/windows/winget/).
+
+Для швидкого встановлення Community Edition Visual Studio 2022 з потрібними компонентами можна скористатися командою Swift.org:
+
+```powershell
+winget install --id Microsoft.VisualStudio.2022.Community --exact --force --custom "--add Microsoft.VisualStudio.Component.Windows11SDK.22000 --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.VC.Tools.ARM64" --source winget
+```
+
+Після цього встанови Swift toolchain:
+
+```powershell
+winget install --id Swift.Toolchain -e --source winget
+```
+
+Офіційна сторінка: [Swift для Windows](https://www.swift.org/install/windows/). Якщо компілятор не знаходить linker або SDK, спочатку перевір ці компоненти.
 
 ## 2. Встанови та перевір Swift
 
@@ -28,6 +48,12 @@ Set-Location .\swift-learning
 ```
 
 ## 4. Перший приклад
+
+Якщо PowerShell блокує локальний скрипт політикою виконання, дозволь його лише в поточному вікні:
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+```
 
 ```powershell
 .\scripts\run-example.ps1 01-hello

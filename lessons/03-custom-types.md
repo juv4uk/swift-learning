@@ -38,6 +38,20 @@ enum StudyStatus {
 
 Класи мають reference semantics: змінні можуть посилатися на той самий екземпляр. У структурах значення копіюється при присвоєнні (із оптимізаціями copy-on-write для багатьох стандартних колекцій).
 
+## Запуск прикладу
+
+Windows / PowerShell:
+
+```powershell
+.\scripts\run-example.ps1 06-structs-enums
+```
+
+Linux / macOS:
+
+```bash
+./scripts/run-example.sh 06-structs-enums
+```
+
 ## Вправи
 
 1. Створи `Book` із назвою, автором і кількістю сторінок.

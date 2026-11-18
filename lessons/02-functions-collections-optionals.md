@@ -35,6 +35,22 @@ if let minutes = minutesByTopic["Функції"] {
 
 `if let` розпаковує Optional лише тоді, коли значення існує. `??` задає безпечне значення за замовчуванням.
 
+## Запуск прикладів
+
+Windows / PowerShell:
+
+```powershell
+.\scripts\run-example.ps1 04-functions
+.\scripts\run-example.ps1 05-collections-optionals
+```
+
+Linux / macOS:
+
+```bash
+./scripts/run-example.sh 04-functions
+./scripts/run-example.sh 05-collections-optionals
+```
+
 ## Вправи
 
 1. Напиши `func square(_ number: Int) -> Int`.

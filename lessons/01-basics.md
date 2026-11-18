@@ -23,13 +23,25 @@ lessonsCompleted += 1
 print("Завершено уроків: \(lessonsCompleted)")
 ```
 
-## Запуск у Windows
+## Запуск у Windows, Linux і macOS
+
+Windows / PowerShell:
 
 ```powershell
 .\scripts\run-example.ps1 01-hello
+.\scripts\run-example.ps1 02-values
+.\scripts\run-example.ps1 03-conditions-loops
 ```
 
-Не починай із `swift main.swift`, якщо JIT у твоєму Windows toolchain повертає `JIT session error`. Для цього курсу використовуй компіляцію через `swiftc` або Swift Package Manager. За потреби можна додати копію DLL з очікуваною назвою — див. [SETUP-WINDOWS.md](../docs/SETUP-WINDOWS.md).
+Linux / macOS:
+
+```bash
+./scripts/run-example.sh 01-hello
+./scripts/run-example.sh 02-values
+./scripts/run-example.sh 03-conditions-loops
+```
+
+На Windows скрипт компілює код через `swiftc`, тому не потрібно запускати окремий файл через JIT-команду `swift main.swift`. Якщо виникають проблеми з бібліотеками toolchain, дивись [інструкцію Windows](../docs/SETUP-WINDOWS.md). Спільні команди для всіх уроків зібрані в [довіднику платформ](../docs/PLATFORM-GUIDE.md).
 
 ## Вправи
 

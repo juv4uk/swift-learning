@@ -27,6 +27,22 @@ let title = await loadTitle()
 
 Не плутай асинхронність із паралельністю: `async/await` описує роботу з операціями, що можуть призупинятися; фактичне планування залежить від runtime та executor.
 
+## Запуск асинхронного прикладу
+
+Windows / PowerShell:
+
+```powershell
+.\scripts\run-example.ps1 08-errors-async
+```
+
+Linux / macOS:
+
+```bash
+./scripts/run-example.sh 08-errors-async
+```
+
+Скрипти додають `-parse-as-library`, потрібний для прикладу з `@main`. ARC, `async/await` і `actor` — частина Swift і доступні для вивчення на Windows та Linux.
+
 ## Вправи
 
 1. Намалюй схему двох об'єктів із взаємними сильними посиланнями.

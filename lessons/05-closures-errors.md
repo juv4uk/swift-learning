@@ -33,6 +33,26 @@ func validate(name: String) throws {
 }
 ```
 
+## Запуск власного прикладу
+
+Фрагменти цього уроку скопіюй у файл `main.swift`, додай виклики функцій і скомпілюй.
+
+Windows / PowerShell:
+
+```powershell
+New-Item -ItemType Directory -Force build | Out-Null
+swiftc .\main.swift -o .\build\lesson05.exe
+.\build\lesson05.exe
+```
+
+Linux / macOS:
+
+```bash
+mkdir -p build
+swiftc ./main.swift -o ./build/lesson05
+./build/lesson05
+```
+
 ## Вправи
 
 1. Із масиву чисел створи масив квадратів через `map`.

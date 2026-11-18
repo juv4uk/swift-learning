@@ -24,6 +24,18 @@ swift test
 
 Тест має перевіряти поведінку, а не внутрішню реалізацію. Назва тесту описує сценарій, assertion — очікуваний результат.
 
+## Команди на Windows і Linux
+
+У PowerShell, Bash і macOS Terminal команди Swift Package Manager однакові:
+
+```text
+swift build
+swift run
+swift test
+```
+
+На Windows потрібні Developer Mode, Windows SDK та MSVC toolchain. На Linux перевір, що дистрибутив підтримується Swift.org. Інструкції: [Windows](../docs/SETUP-WINDOWS.md), [Linux](../docs/SETUP-LINUX.md).
+
 ## Вправи
 
 1. Додай тип `StudyItem` із `Codable`.
