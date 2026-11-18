@@ -2,6 +2,7 @@ param(
     [Parameter(Mandatory = $true)]
     [ValidateSet(
         "01-hello",
+        "01-basics-exercises",
         "02-values",
         "03-conditions-loops",
         "04-functions",

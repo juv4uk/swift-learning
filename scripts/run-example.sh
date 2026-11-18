@@ -8,7 +8,7 @@ fi
 
 example="$1"
 case "$example" in
-  01-hello|02-values|03-conditions-loops|04-functions|05-collections-optionals|06-structs-enums|07-protocols-generics|08-errors-async) ;;
+  01-hello|01-basics-exercises|02-values|03-conditions-loops|04-functions|05-collections-optionals|06-structs-enums|07-protocols-generics|08-errors-async) ;;
   *) echo "Невідомий приклад: $example" >&2; exit 2 ;;
 esac
 

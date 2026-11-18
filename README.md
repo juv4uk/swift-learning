@@ -59,7 +59,7 @@ swift run
 swift test
 ```
 
-Для Windows потрібні MSVC C++ Build Tools і Windows SDK. Деталі: [docs/SETUP-WINDOWS.md](docs/SETUP-WINDOWS.md).
+Для Windows потрібні MSVC C++ Build Tools і Windows SDK. Деталі: [docs/SETUP-WINDOWS.md](docs/SETUP-WINDOWS.md). Якщо `swift main.swift` повертає `JIT session error`, у тій самій інструкції описані обхідні шляхи.
 
 ### Linux (Bash)
 

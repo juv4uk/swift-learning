@@ -62,6 +62,31 @@ Visual Studio Code зі Swift extension може бути зручним ред�
 - Xcode та SwiftUI для нативних застосунків Apple потребують macOS.
 - Приклад `08-errors-async` використовує `@main`, тому скрипт автоматично додає `-parse-as-library`.
 
+### JIT-режим `swift file.swift` на Windows
+
+У Swift 6.4.2 інтерпретатор може падати з помилкою:
+
+```text
+JIT session error: Symbols not found: [ $ss27_allocateUninitializedArrayySayxG_BptBwlFyp_Tg5 ]
+```
+
+Причина: інтерпретатор шукає `libswiftSwiftOnoneSupport.dll`, а у Windows-тулчейні файл називається `swiftSwiftOnoneSupport.dll`. Помилку виправлено в [PR #94206](https://github.com/swiftlang/swift/pull/94206), але стабільного релізу з нею може ще не бути.
+
+Надійні варіанти, яких дотримується курс:
+
+- компілювати окремий файл через `swiftc` — див. розділ 4;
+- користуватися Swift Package Manager: `swift build`, `swift run`;
+- запустити інтерпретатор з оптимізацією: `swift -O main.swift`.
+
+Якщо потрібно саме `swift main.swift` без `-O`, створіть копію DLL з очікуваною назвою:
+
+```powershell
+$runtime = "$env:LOCALAPPDATA\Programs\Swift\Runtimes\6.4.2\usr\bin"
+Copy-Item "$runtime\swiftSwiftOnoneSupport.dll" "$runtime\libswiftSwiftOnoneSupport.dll"
+```
+
+Замініть `6.4.2` на версію свого runtime. Після оновлення тулчейну копію доведеться повторити; коли вийде версія з виправленням — вона стане непотрібною.
+
 Корисні сторінки:
 - [Встановлення Swift на Windows](https://www.swift.org/install/windows/)
 - [Підтримувані платформи](https://www.swift.org/platform-support/)
