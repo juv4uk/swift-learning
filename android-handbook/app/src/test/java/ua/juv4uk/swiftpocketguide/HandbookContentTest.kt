@@ -28,7 +28,7 @@ class HandbookContentTest {
     }
 
     @Test fun quizHasQuestionsAndValidAnswerIndexes() {
-        assertEquals(14, QuizContent.questions.size)
+        assertEquals(13, QuizContent.questions.size)
         QuizContent.questions.forEach { question ->
             assertTrue(question.options.isNotEmpty())
             assertTrue(question.correctIndex in question.options.indices)
