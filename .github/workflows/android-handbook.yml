@@ -67,6 +67,8 @@ jobs:
         working-directory: .
         run: |
           set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y libcurl4-openssl-dev
           curl -fSL https://download.swift.org/swiftly/linux/swiftly-x86_64.tar.gz -o "$RUNNER_TEMP/swiftly.tar.gz"
           tar -xzf "$RUNNER_TEMP/swiftly.tar.gz" -C "$RUNNER_TEMP"
           cd "$RUNNER_TEMP"
