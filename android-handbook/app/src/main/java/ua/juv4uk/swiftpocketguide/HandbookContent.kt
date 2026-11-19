@@ -139,9 +139,158 @@ Task {
     print(message)
 }""",
             "Не кожну функцію потрібно робити async. Використовуй асинхронність там, де є операція очікування.")
-    )
+        ),
+        HandbookTopic("strings","Основи","Робота з текстом","Інтерполяція та багаторядкові рядки",
+            "String — це не просто набір символів. Swift дозволяє вставляти значення в текст через інтерполяцію \\(вираз), об'єднувати рядки та записувати багаторядковий текст у потрійних лапках. Не плутай порожній рядок \"\" із nil: це різні стани.",
+            """let name = "Софія"
+let lessons = 4
+let message = "Привіт, \\(name)! Ти пройшла \\(lessons) уроки."
 
-    val glossary = listOf(
+let poem = """
+Swift — це мова,
+у якій важлива ясність.
+"""
+print(message)
+print(poem)""",
+            "Інтерполяція \\(name) вставляє значення, а не друкує назву змінної."),
+        HandbookTopic("tuples","Дані","Кортежі","Кілька значень в одному результаті",
+            "Кортеж (tuple) групує кілька значень, які можуть мати різні типи. Він зручний для невеликого локального результату. Якщо дані мають власний сенс і використовуються в багатьох місцях, краще створити struct.",
+            """let response = (code: 200, message: "OK")
+print(response.code)
+print(response.message)
+
+func minMax(_ numbers: [Int]) -> (min: Int, max: Int)? {
+    guard !numbers.isEmpty else { return nil }
+    return (numbers.min()!, numbers.max()!)
+}
+
+if let bounds = minMax([8, 3, 12, 5]) {
+    print("Від \\(bounds.min) до \\(bounds.max)")
+}""",
+            "Кортеж — легка упаковка кількох значень, але не заміна повноцінній моделі даних."),
+        HandbookTopic("closures","Організація коду","Замикання","Функції, які можна передавати як значення",
+            "Замикання (closure) — блок коду, який можна зберегти в змінній або передати іншій функції. Воно часто описує дію: як відсортувати список, перетворити елемент або відреагувати на подію. $0 означає перший параметр, $1 — другий.",
+            """let names = ["Олена", "Іван", "Марія"]
+let sorted = names.sorted { first, second in
+    first.count < second.count
+}
+
+let numbers = [1, 2, 3, 4]
+let doubled = numbers.map { $0 * 2 }
+let even = numbers.filter { $0.isMultiple(of: 2) }
+
+print(sorted)
+print(doubled)
+print(even)""",
+            "Не скорочуй closure до $0, якщо через це код стає незрозумілим."),
+        HandbookTopic("value-reference","Власні типи","struct чи class?","Типи-значення та типи-посилання",
+            "struct має семантику значення: присвоєння створює незалежну копію. class має семантику посилання: дві змінні можуть вказувати на той самий об'єкт. Структури — чудовий стандартний вибір для моделей даних; клас потрібен, коли важлива спільна ідентичність або спадкування.",
+            """struct Counter {
+    var value = 0
+}
+var first = Counter()
+var second = first
+second.value = 10
+print(first.value) // 0 — незалежна копія
+
+final class Player {
+    var name: String
+    init(name: String) { self.name = name }
+}
+let playerA = Player(name: "Леся")
+let playerB = playerA
+playerB.name = "Орися"
+print(playerA.name) // Орися — той самий об'єкт""",
+            "Обирай struct, якщо не потрібна спільна змінна ідентичність. Не використовуй class лише за звичкою з інших мов."),
+        HandbookTopic("initializers","Власні типи","Ініціалізатори","Як створюється коректний об'єкт",
+            "Ініціалізатор init задає правила створення значення. Він має підготувати всі властивості до використання. self допомагає відрізнити властивість екземпляра від параметра. Ініціалізатор init? може відхилити некоректні дані.",
+            """struct User {
+    let name: String
+    var age: Int
+
+    init?(name: String, age: Int) {
+        guard !name.isEmpty, age >= 0 else { return nil }
+        self.name = name
+        self.age = age
+    }
+}
+
+if let user = User(name: "Андрій", age: 21) {
+    print("\\(user.name): \\(user.age)")
+}""",
+            "Створи об'єкт так, щоб він одразу був у допустимому стані."),
+        HandbookTopic("extensions","Можливості мови","Розширення","Додаємо поведінку до наявного типу",
+            "extension додає обчислювані властивості, методи та інші можливості до вже наявного типу — навіть якщо його код не твій. Розширення не створює підклас і не змінює початкове оголошення.",
+            """extension Int {
+    var isEven: Bool {
+        self % 2 == 0
+    }
+}
+
+let values = [2, 5, 8, 11]
+for value in values {
+    print("\\(value): парне? \\(value.isEven)")
+}""",
+            "Додавай у extension поведінку, яка природно належить типу."),
+        HandbookTopic("generics","Можливості мови","Узагальнення","Один алгоритм для багатьох типів",
+            "Generics дозволяють писати функції та типи, які працюють із різними конкретними типами, не втрачаючи перевірку типів. T — параметр типу. Обмеження протоколом дозволяє вимагати потрібні можливості.",
+            """func firstElement<T>(of items: [T]) -> T? {
+    items.first
+}
+
+let firstNumber = firstElement(of: [10, 20, 30])
+let firstWord = firstElement(of: ["Swift", "Kotlin"])
+
+print(firstNumber ?? 0)
+print(firstWord ?? "Список порожній")""",
+            "Generics прибирають дублювання, але не роби API складнішим заради абстракції."),
+        HandbookTopic("codable","Дані","Codable та JSON","Зберігаємо й обмінюємося даними",
+            "Codable — псевдонім для Encodable та Decodable. JSONEncoder перетворює модель на JSON, а JSONDecoder відновлює її. Це часто використовують для API, налаштувань і файлів.",
+            """import Foundation
+
+struct Book: Codable {
+    let title: String
+    let pages: Int
+}
+
+let book = Book(title: "Мова Swift", pages: 240)
+do {
+    let data = try JSONEncoder().encode(book)
+    let json = String(data: data, encoding: .utf8) ?? ""
+    print(json)
+
+    let restored = try JSONDecoder().decode(Book.self, from: data)
+    print(restored.title)
+} catch {
+    print("Помилка кодування: \\(error)")
+}""",
+            "Не зберігай паролі й секретні ключі у звичайному JSON-файлі."),
+        HandbookTopic("networking","Сучасний Swift","Мережеві запити","URLSession та перевірка HTTP-відповіді",
+            "URLSession виконує HTTP-запити, а async/await робить асинхронний код послідовним на вигляд. Перевіряй статус HTTP, обробляй помилки мережі та не вважай будь-яку відповідь успішною лише тому, що сервер відповів.",
+            """import Foundation
+
+func downloadText() async throws -> String {
+    guard let url = URL(string: "https://example.com") else {
+        throw URLError(.badURL)
+    }
+    let (data, response) = try await URLSession.shared.data(from: url)
+    guard let http = response as? HTTPURLResponse,
+          (200..<300).contains(http.statusCode) else {
+        throw URLError(.badServerResponse)
+    }
+    return String(decoding: data, as: UTF8.self)
+}
+
+Task {
+    do {
+        let text = try await downloadText()
+        print(text.prefix(120))
+    } catch {
+        print("Не вдалося завантажити: \\(error)")
+    }
+}""",
+            "Мережа може зникнути, сервер — повернути помилку, а відповідь — бути не тим форматом.")
+(
         GlossaryEntry("Алгоритм","Послідовність кроків для розв'язання задачі."),
         GlossaryEntry("Аргумент","Конкретне значення, яке передають параметру під час виклику функції."),
         GlossaryEntry("Змінна","Іменоване місце для значення, яке може змінюватися."),
@@ -153,6 +302,20 @@ Task {
         GlossaryEntry("Тип","Опис множини можливих значень і дозволених операцій."),
         GlossaryEntry("Optional","Тип, який представляє або значення, або його відсутність (nil)."),
         GlossaryEntry("nil","Спеціальне значення Swift, яке означає відсутність значення в Optional."),
-        GlossaryEntry("IDE","Інтегроване середовище розробки: редактор, збірка, запуск і налагодження.")
+        GlossaryEntry("IDE","Інтегроване середовище розробки: редактор, збірка, запуск і налагодження."),
+        GlossaryEntry("Array","Упорядкована колекція елементів, доступних за індексом."),
+        GlossaryEntry("Dictionary","Колекція пар ключ-значення."),
+        GlossaryEntry("Set","Колекція унікальних значень."),
+        GlossaryEntry("Closure","Самодостатній блок коду, який можна передати або зберегти."),
+        GlossaryEntry("Tuple","Група кількох значень, можливо різних типів."),
+        GlossaryEntry("struct","Тип-значення, який об'єднує дані та поведінку."),
+        GlossaryEntry("class","Тип-посилання з підтримкою спадкування."),
+        GlossaryEntry("init","Спеціальний метод, який створює й ініціалізує екземпляр типу."),
+        GlossaryEntry("extension","Механізм додавання можливостей до наявного типу."),
+        GlossaryEntry("Generics","Узагальнений код, що працює з різними типами зі збереженням типобезпеки."),
+        GlossaryEntry("Codable","Протоколи для кодування та декодування даних."),
+        GlossaryEntry("URLSession","API Foundation для мережевих запитів."),
+        GlossaryEntry("HTTP","Протокол обміну даними між клієнтом і сервером."),
+        GlossaryEntry("JSON","Текстовий формат представлення структурованих даних.")
     )
 }
