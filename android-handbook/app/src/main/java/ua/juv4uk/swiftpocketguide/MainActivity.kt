@@ -22,7 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 private enum class GuideTab(val title: String, val symbol: String) {
-    HOME("Головна", "⌂"), TOPICS("Теми", "▤"), QUIZ("Тест", "?"),
+    HOME("Головна", "⌂"), TOPICS("Теми", "▤"), QUIZ("Тест", "?"), MORE("Ще", "⋯"),
     GLOSSARY("Словник", "А"), PROGRESS("Прогрес", "✓"), PLAYGROUND("Swift IDE", "▶")
 }
 
@@ -42,6 +42,7 @@ private fun SwiftPocketGuideApp() {
     var bookmarks by remember { mutableStateOf(preferences.getStringSet("bookmarks", emptySet())?.toSet() ?: emptySet()) }
     var darkTheme by remember { mutableStateOf(preferences.getBoolean("dark_theme", false)) }
     var selectedTab by remember { mutableStateOf(GuideTab.HOME) }
+    var moreDestination by remember { mutableStateOf<GuideTab?>(null) }
     var selectedTopic by remember { mutableStateOf<HandbookTopic?>(null) }
     var search by remember { mutableStateOf("") }
 
@@ -57,12 +58,16 @@ private fun SwiftPocketGuideApp() {
                 TopAppBar(
                     title = {
                         Column {
-                            Text(selectedTopic?.title ?: "Swift Pocket Guide")
+                            Text(selectedTopic?.title ?: moreDestination?.title ?: if (selectedTab == GuideTab.MORE) "Інші розділи" else "Swift Pocket Guide")
                             if (selectedTopic == null) Text("Кишеньковий довідник початківця", style = MaterialTheme.typography.labelSmall)
                         }
                     },
                     navigationIcon = {
-                        if (selectedTopic != null) TextButton(onClick = { selectedTopic = null }) { Text("← Назад") }
+                        if (selectedTopic != null) {
+                            TextButton(onClick = { selectedTopic = null }) { Text("← Назад") }
+                        } else if (moreDestination != null) {
+                            TextButton(onClick = { moreDestination = null }) { Text("← До розділів") }
+                        }
                     },
                     actions = {
                         IconButton(onClick = {
@@ -75,12 +80,15 @@ private fun SwiftPocketGuideApp() {
             bottomBar = {
                 if (selectedTopic == null) {
                     NavigationBar {
-                        GuideTab.entries.forEach { tab ->
+                        listOf(GuideTab.HOME, GuideTab.TOPICS, GuideTab.QUIZ, GuideTab.MORE).forEach { tab ->
                             NavigationBarItem(
                                 selected = selectedTab == tab,
-                                onClick = { selectedTab = tab },
+                                onClick = {
+                                    selectedTab = tab
+                                    moreDestination = null
+                                },
                                 icon = { Text(tab.symbol) },
-                                label = { Text(tab.title) }
+                                label = { Text(tab.title, maxLines = 1) }
                             )
                         }
                     }
@@ -96,12 +104,18 @@ private fun SwiftPocketGuideApp() {
                         onBookmark = { toggle(bookmarks, topic.id, "bookmarks") { bookmarks = it } }
                     )
                 } else when (selectedTab) {
-                    GuideTab.HOME -> HomeScreen(completed.size, { selectedTab = GuideTab.TOPICS }, { selectedTab = GuideTab.QUIZ }, { selectedTab = GuideTab.PLAYGROUND }) { selectedTopic = it }
+                    GuideTab.HOME -> HomeScreen(completed.size, { selectedTab = GuideTab.TOPICS }, { selectedTab = GuideTab.QUIZ }, { selectedTab = GuideTab.MORE; moreDestination = GuideTab.PLAYGROUND }) { selectedTopic = it }
                     GuideTab.TOPICS -> TopicsScreen(search, { search = it }, completed, bookmarks) { selectedTopic = it }
                     GuideTab.QUIZ -> QuizScreen()
                     GuideTab.PLAYGROUND -> SwiftPlaygroundScreen()
                     GuideTab.GLOSSARY -> GlossaryScreen(search, { search = it })
                     GuideTab.PROGRESS -> ProgressScreen(completed, bookmarks) { selectedTopic = it }
+                    GuideTab.MORE -> when (moreDestination) {
+                        GuideTab.GLOSSARY -> GlossaryScreen(search, { search = it })
+                        GuideTab.PROGRESS -> ProgressScreen(completed, bookmarks) { selectedTopic = it }
+                        GuideTab.PLAYGROUND -> SwiftPlaygroundScreen()
+                        else -> MoreScreen { moreDestination = it }
+                    }
                 }
             }
         }
@@ -145,6 +159,45 @@ private fun StatCard(label: String, value: String, modifier: Modifier = Modifier
         Column(Modifier.padding(16.dp)) {
             Text(value, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
             Text(label, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+    }
+}
+
+
+@Composable
+private fun MoreScreen(onOpen: (GuideTab) -> Unit) {
+    LazyColumn(
+        Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(20.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        item {
+            Text("Інші розділи", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+            Text("Додаткові інструменти та довідкові матеріали.")
+        }
+        item {
+            Card(onClick = { onOpen(GuideTab.GLOSSARY) }, modifier = Modifier.fillMaxWidth()) {
+                Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text("А — Словник", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                    Text("Пояснення основних термінів Swift.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+        }
+        item {
+            Card(onClick = { onOpen(GuideTab.PROGRESS) }, modifier = Modifier.fillMaxWidth()) {
+                Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text("✓ Прогрес і закладки", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                    Text("Вивчені теми та збережені матеріали.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+        }
+        item {
+            Card(onClick = { onOpen(GuideTab.PLAYGROUND) }, modifier = Modifier.fillMaxWidth()) {
+                Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text("▶ Swift IDE", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                    Text("Редактор коду та запуск програм онлайн.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
         }
     }
 }
