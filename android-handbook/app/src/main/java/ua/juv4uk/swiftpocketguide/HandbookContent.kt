@@ -288,6 +288,72 @@ Task {
     }
 }""",
             "Мережа може зникнути, сервер — повернути помилку, а відповідь — бути не тим форматом."),
+        HandbookTopic("actors","Сучасний Swift","Actor і безпечний спільний стан","Захищаємо дані в конкурентному коді",
+            "Коли кілька асинхронних задач звертаються до змінного стану, звичайний клас може створити гонку даних. actor ізолює власний стан: доступ до нього координується Swift Concurrency. Звернення ззовні часто потребує await. Actor не означає, що весь код усередині виконується паралельно.",
+            """actor ScoreStore {
+    private var score = 0
+
+    func add(_ points: Int) {
+        score += points
+    }
+
+    func currentScore() -> Int {
+        score
+    }
+}
+
+let store = ScoreStore()
+Task {
+    await store.add(10)
+    let total = await store.currentScore()
+    print("Рахунок: \\(total)")
+}""",
+            "Не роби всі типи actor автоматично. Використовуй ізоляцію там, де справді є спільний змінний стан."),
+        HandbookTopic("swiftui-state","Apple-платформи","SwiftUI: стан і події","Як інтерфейс реагує на користувача",
+            "SwiftUI описує інтерфейс як функцію стану. @State зберігає локальний стан View, а зміна цього стану спричиняє оновлення відповідної частини інтерфейсу. Button запускає дію, Text показує актуальне значення. Не змінюй стан напряму з довільного потоку.",
+            """import SwiftUI
+
+struct CounterView: View {
+    @State private var count = 0
+
+    var body: some View {
+        VStack(spacing: 16) {
+            Text("Натискань: \\(count)")
+            Button("Додати") {
+                count += 1
+            }
+        }
+        .padding()
+    }
+}""",
+            "View — це опис інтерфейсу, а не місце для довготривалої бізнес-логіки. Для передавання стану дочірньому View вивчи @Binding."),
+        HandbookTopic("unit-tests","Якість коду","Модульні тести","Перевіряємо поведінку автоматично",
+            "Модульний тест перевіряє невелику одиницю поведінки ізольовано від решти системи. Тест має мати зрозумілий сценарій, підготовку даних, виконання та перевірку результату. Тестуй також межові випадки: порожні дані, нуль, неправильний ввід.",
+            """import XCTest
+
+struct PriceCalculator {
+    func total(price: Int, quantity: Int) -> Int {
+        price * quantity
+    }
+}
+
+final class PriceCalculatorTests: XCTestCase {
+    func testTotalForTwoItems() {
+        let calculator = PriceCalculator()
+        XCTAssertEqual(
+            calculator.total(price: 25, quantity: 2),
+            50
+        )
+    }
+
+    func testZeroQuantity() {
+        XCTAssertEqual(
+            PriceCalculator().total(price: 25, quantity: 0),
+            0
+        )
+    }
+}""",
+            "Тест повинен падати, коли поведінка неправильна. Не підганяй очікуваний результат під помилку реалізації."),
     )
 
     val glossary = listOf(
@@ -316,6 +382,12 @@ Task {
         GlossaryEntry("Codable","Протоколи для кодування та декодування даних."),
         GlossaryEntry("URLSession","API Foundation для мережевих запитів."),
         GlossaryEntry("HTTP","Протокол обміну даними між клієнтом і сервером."),
-        GlossaryEntry("JSON","Текстовий формат представлення структурованих даних.")
+        GlossaryEntry("JSON","Текстовий формат представлення структурованих даних."),
+        GlossaryEntry("Actor","Тип ізоляції стану в Swift Concurrency, що захищає власні змінні дані."),
+        GlossaryEntry("SwiftUI","Декларативний фреймворк Apple для створення інтерфейсів."),
+        GlossaryEntry("@State","Властивість SwiftUI для локального стану View."),
+        GlossaryEntry("@Binding","Посилання на стан, яким володіє інший компонент інтерфейсу."),
+        GlossaryEntry("Модульний тест","Автоматична перевірка невеликої одиниці поведінки програми."),
+        GlossaryEntry("Гонка даних","Помилка конкурентного доступу, коли результат залежить від непередбачуваного порядку операцій.")
     )
 }
