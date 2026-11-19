@@ -1,9 +1,9 @@
-name: Android handbook build
+name: Android handbook build and release
 
 on:
   push:
     branches:
-      - feature/android-swift-pocket-guide
+      - main
     paths:
       - "android-handbook/**"
       - ".github/workflows/android-handbook.yml"
@@ -14,7 +14,7 @@ on:
       - ".github/workflows/android-handbook.yml"
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: android-handbook-${{ github.ref }}
@@ -57,6 +57,17 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: swift-pocket-guide-debug
-          path: android-handbook/app/build/outputs/apk/debug/*.apk
+          path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
           retention-days: 14
+
+      - name: Publish GitHub Release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: swift-pocket-guide-v1.0.0
+          target_commitish: ${{ github.sha }}
+          name: Swift Pocket Guide v1.0.0
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+          files: app/build/outputs/apk/debug/*.apk
