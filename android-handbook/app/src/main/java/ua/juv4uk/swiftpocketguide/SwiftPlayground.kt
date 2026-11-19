@@ -1,10 +1,7 @@
 package ua.juv4uk.swiftpocketguide
 
 import android.graphics.Bitmap
-import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
-import android.content.Context
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
@@ -50,23 +47,12 @@ fun SwiftPlaygroundScreen() {
                     super.onPageStarted(view, url, favicon)
                 }
             }
-            setOnTouchListener { view, event ->
-                if (event.action == android.view.MotionEvent.ACTION_DOWN) {
-                    view.requestFocus()
-                    post {
-                        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                        imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
-                    }
-                }
-                false
-            }
             loadUrl("https://swiftfiddle.com/")
         }
     }
 
     DisposableEffect(webView) {
         onDispose {
-            webView.setOnTouchListener(null)
             webView.stopLoading()
             webView.destroy()
         }
@@ -87,7 +73,7 @@ fun SwiftPlaygroundScreen() {
                 style = MaterialTheme.typography.titleMedium
             )
             Text(
-                "Торкнися поля редактора, щоб відкрити клавіатуру. Для компіляції потрібен інтернет; код надсилається до SwiftFiddle для виконання на сервері.",
+                "Торкнися редактора, щоб відкрити клавіатуру. Для компіляції потрібен інтернет; код надсилається до SwiftFiddle для виконання на сервері.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
