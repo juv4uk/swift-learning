@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 
 private enum class GuideTab(val title: String, val symbol: String) {
     HOME("Головна", "⌂"), TOPICS("Теми", "▤"), QUIZ("Тест", "?"), MORE("Ще", "⋯"),
-    GLOSSARY("Словник", "А"), PROGRESS("Прогрес", "✓"), PLAYGROUND("Swift", "▶")
+    GLOSSARY("Словник", "А"), PROGRESS("Прогрес", "✓"), SWIFT_RUNTIME("Swift", "▶")
 }
 
 class MainActivity : ComponentActivity() {
@@ -104,16 +104,16 @@ private fun SwiftPocketGuideApp() {
                         onBookmark = { toggle(bookmarks, topic.id, "bookmarks") { bookmarks = it } }
                     )
                 } else when (selectedTab) {
-                    GuideTab.HOME -> HomeScreen(completed.size, { selectedTab = GuideTab.TOPICS }, { selectedTab = GuideTab.QUIZ }, { selectedTab = GuideTab.MORE; moreDestination = GuideTab.PLAYGROUND }) { selectedTopic = it }
+                    GuideTab.HOME -> HomeScreen(completed.size, { selectedTab = GuideTab.TOPICS }, { selectedTab = GuideTab.QUIZ }, { selectedTab = GuideTab.MORE; moreDestination = GuideTab.SWIFT_RUNTIME }) { selectedTopic = it }
                     GuideTab.TOPICS -> TopicsScreen(search, { search = it }, completed, bookmarks) { selectedTopic = it }
                     GuideTab.QUIZ -> QuizScreen()
-                    GuideTab.PLAYGROUND -> SwiftPlaygroundScreen()
+                    GuideTab.SWIFT_RUNTIME -> SwiftRuntimeScreen()
                     GuideTab.GLOSSARY -> GlossaryScreen(search, { search = it })
                     GuideTab.PROGRESS -> ProgressScreen(completed, bookmarks) { selectedTopic = it }
                     GuideTab.MORE -> when (moreDestination) {
                         GuideTab.GLOSSARY -> GlossaryScreen(search, { search = it })
                         GuideTab.PROGRESS -> ProgressScreen(completed, bookmarks) { selectedTopic = it }
-                        GuideTab.PLAYGROUND -> SwiftPlaygroundScreen()
+                        GuideTab.SWIFT_RUNTIME -> SwiftRuntimeScreen()
                         else -> MoreScreen { moreDestination = it }
                     }
                 }
@@ -125,7 +125,7 @@ private fun SwiftPocketGuideApp() {
 @Composable
 private fun HomeScreen(
     completedCount: Int, onOpenTopics: () -> Unit, onOpenQuiz: () -> Unit,
-    onOpenPlayground: () -> Unit, onOpenTopic: (HandbookTopic) -> Unit
+    onOpenSwiftRuntime: () -> Unit, onOpenTopic: (HandbookTopic) -> Unit
 ) {
     LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         item {
@@ -137,7 +137,7 @@ private fun HomeScreen(
                     Spacer(Modifier.height(16.dp))
                     Button(onClick = onOpenTopics) { Text("Почати навчання") }
                     OutlinedButton(onClick = onOpenQuiz, modifier = Modifier.fillMaxWidth()) { Text("Перевірити знання →") }
-                    Button(onClick = onOpenPlayground, modifier = Modifier.fillMaxWidth()) { Text("Відкрити Swift на пристрої ▶") }
+                    Button(onClick = onOpenSwiftRuntime, modifier = Modifier.fillMaxWidth()) { Text("Відкрити Swift на пристрої ▶") }
                 }
             }
         }
@@ -192,7 +192,7 @@ private fun MoreScreen(onOpen: (GuideTab) -> Unit) {
             }
         }
         item {
-            Card(onClick = { onOpen(GuideTab.PLAYGROUND) }, modifier = Modifier.fillMaxWidth()) {
+            Card(onClick = { onOpen(GuideTab.SWIFT_RUNTIME) }, modifier = Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Text("▶ Swift на пристрої", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
                     Text("Локальна перевірка нативного Swift-модуля.", color = MaterialTheme.colorScheme.onSurfaceVariant)

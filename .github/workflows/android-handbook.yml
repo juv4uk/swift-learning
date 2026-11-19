@@ -131,18 +131,18 @@ jobs:
 
       - name: Prepare direct-download preview APK
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        run: cp app/build/outputs/apk/debug/app-debug.apk Swift-Pocket-Guide-v1.1.6-preview.apk
+        run: cp app/build/outputs/apk/debug/app-debug.apk Swift-Pocket-Guide-v1.1.7-preview.apk
 
       - name: Publish preview APK as a direct GitHub Release asset
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: swift-pocket-guide-v1.1.6
+          tag_name: swift-pocket-guide-v1.1.7
           target_commitish: ${{ github.sha }}
-          name: Swift Pocket Guide v1.1.6
+          name: Swift Pocket Guide v1.1.7
           generate_release_notes: true
           fail_on_unmatched_files: true
-          files: android-handbook/Swift-Pocket-Guide-v1.1.6-preview.apk
+          files: android-handbook/Swift-Pocket-Guide-v1.1.7-preview.apk
 
       - name: Prepare persistent release signing key
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && env.ANDROID_KEYSTORE_BASE64 != '' && env.ANDROID_KEYSTORE_PASSWORD != '' && env.ANDROID_KEY_ALIAS != '' && env.ANDROID_KEY_PASSWORD != '' }}
@@ -167,9 +167,9 @@ jobs:
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && env.ANDROID_KEYSTORE_BASE64 != '' && env.ANDROID_KEYSTORE_PASSWORD != '' && env.ANDROID_KEY_ALIAS != '' && env.ANDROID_KEY_PASSWORD != '' }}
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: swift-pocket-guide-v1.1.6
+          tag_name: swift-pocket-guide-v1.1.7
           target_commitish: ${{ github.sha }}
-          name: Swift Pocket Guide v1.1.6
+          name: Swift Pocket Guide v1.1.7
           generate_release_notes: true
           fail_on_unmatched_files: true
           files: android-handbook/app/build/outputs/apk/release/*.apk

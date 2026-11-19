@@ -64,7 +64,9 @@ android-handbook/
 ├── app/src/main/java/ua/juv4uk/swiftpocketguide/
 │   ├── MainActivity.kt
 │   ├── HandbookContent.kt
-│   └── QuizContent.kt
+│   ├── QuizContent.kt
+│   ├── SwiftRuntimeScreen.kt
+│   └── SwiftNative.kt
 ├── app/src/main/res/
 │   ├── drawable/ic_launcher_foreground.xml
 │   └── mipmap-anydpi-v26/ic_launcher.xml
@@ -78,7 +80,7 @@ android-handbook/
 
 Застосунок містить нативну Swift-бібліотеку, яку CI збирає офіційним Swift 6.4.2 Android SDK для `aarch64-unknown-linux-android30` і пакує як `arm64-v8a`. Кнопка «Перевірити Swift на телефоні» викликає функцію, написану на Swift, через JNI; цей тест виконується локально й не потребує мережі.
 
-Важливо: це доводить виконання скомпільованого Swift-коду на ARM64 Android, але ще **не** є повноцінним локальним компілятором довільного Swift-коду. Вбудований редактор SwiftFiddle поки що компілює онлайн. Для повністю автономної IDE потрібен окремий проєкт збирання host-toolchain/компілятора для Android або інший локальний execution backend.
+Важливо: це доводить виконання скомпільованого Swift-коду на ARM64 Android, але ще **не** є повноцінним локальним компілятором довільного Swift-коду. Застосунок не містить онлайн-IDE або віддаленого редактора. Екран викликає лише заздалегідь скомпільовані Swift-функції; локальний редактор і компіляція довільних програм залишаються окремим наступним етапом.
 
 ### Збірка Swift-модуля
 
@@ -98,6 +100,3 @@ swift build --configuration release --swift-sdk swift-6.4.2-RELEASE_android --tr
 - [Compose BOM](https://developer.android.com/develop/ui/compose/bom)
 
 
-## Swift IDE
-
-The Android app includes an embedded SwiftFiddle playground for editing, compiling, and running real Swift snippets. An internet connection is required; source code is sent to SwiftFiddle's server for execution.

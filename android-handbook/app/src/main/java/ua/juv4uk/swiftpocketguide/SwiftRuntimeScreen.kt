@@ -22,11 +22,11 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 
 /**
- * Native Swift runtime screen. It deliberately contains no embedded third-party
- * web IDE: the only executable Swift code is the native library packaged in this APK.
+ * Native Swift runtime verification screen. It contains no browser-based editor;
+ * executable Swift code comes from the library packaged in this APK.
  */
 @Composable
-fun SwiftPlaygroundScreen() {
+fun SwiftRuntimeScreen() {
     var runtimeStatus by remember { mutableStateOf("Натисни кнопку, щоб виконати перевірку.") }
     var verified by remember { mutableStateOf(false) }
 
@@ -38,7 +38,7 @@ fun SwiftPlaygroundScreen() {
         item {
             Text("Swift на пристрої", style = MaterialTheme.typography.headlineSmall)
             Text(
-                "Локальний нативний модуль Swift для Android ARM64. Цей екран не відкриває SwiftFiddle або інші зовнішні IDE.",
+                "Локальний нативний модуль Swift для Android ARM64. Екран не відкриває зовнішніх редакторів або вебсайтів.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
