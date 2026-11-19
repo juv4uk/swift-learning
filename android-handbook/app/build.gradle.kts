@@ -17,6 +17,7 @@ android {
         applicationId = "ua.juv4uk.swiftpocketguide"
         minSdk = 26
         targetSdk = 36
+        // Increase versionCode for every published Android update.
         versionCode = 3
         versionName = "1.1.2"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
