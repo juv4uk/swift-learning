@@ -29,7 +29,7 @@ let isLearning: Bool = true""",
 let age: Int = 20
 let temperature: Double = 21.5
 let isStudent: Bool = true
-print("Мене звати \\(name), мені \\(age).")""",
+print("Мене звати \(name), мені \(age).")""",
             "Число 42 і текст \"42\" — різні значення. Swift не змішує їх автоматично."),
         HandbookTopic("conditions","Керування","Умови","if, else та switch",
             "Умова дозволяє виконати різні інструкції. У Swift умова if повинна мати тип Bool — числа й рядки не трактуються як true або false.",
@@ -50,7 +50,7 @@ default: print("Потрібна практика")
         HandbookTopic("loops","Керування","Цикли","Повторення дій",
             "for-in перебирає елементи колекції або діапазону. while повторює блок, поки умова істинна. Стеж, щоб умова while колись стала хибною.",
             """for number in 1...5 {
-    print("Крок номер \\(number)")
+    print("Крок номер \(number)")
 }
 var countdown = 3
 while countdown > 0 {
@@ -61,7 +61,7 @@ while countdown > 0 {
         HandbookTopic("functions","Організація коду","Функції","Іменовані блоки повторного використання",
             "Функція об'єднує інструкції під одним ім'ям. Параметри передають вхідні значення, а return повертає результат. Тип результату вказують після стрілки ->.",
             """func greet(name: String) -> String {
-    return "Привіт, \\(name)!"
+    return "Привіт, \(name)!"
 }
 let message = greet(name: "Іван")
 print(message)
@@ -112,7 +112,7 @@ lesson.status = .inProgress""",
 struct Book: Describable {
     let title: String
     var description: String {
-        "Книга: \\(title)"
+        "Книга: \(title)"
     }
 }""",
             "Протокол описує, що тип уміє робити, а не те, як саме він це реалізує."),
@@ -121,12 +121,12 @@ struct Book: Describable {
             """enum LoginError: Error { case emptyName }
 func login(name: String) throws {
     guard !name.isEmpty else { throw LoginError.emptyName }
-    print("Вітаю, \\(name)!")
+    print("Вітаю, \(name)!")
 }
 do {
     try login(name: "")
 } catch {
-    print("Не вдалося увійти: \\(error)")
+    print("Не вдалося увійти: \(error)")
 }""",
             "Не приховуй помилки порожнім catch. Виріши, чи показати повідомлення, повторити дію або передати помилку вище."),
         HandbookTopic("async","Сучасний Swift","Асинхронність","async та await",
@@ -140,15 +140,15 @@ Task {
 }""",
             "Не кожну функцію потрібно робити async. Використовуй асинхронність там, де є операція очікування."),
         HandbookTopic("strings","Основи","Робота з текстом","Інтерполяція та багаторядкові рядки",
-            "String — це не просто набір символів. Swift дозволяє вставляти значення в текст через інтерполяцію \\(вираз), об'єднувати рядки та записувати багаторядковий текст у потрійних лапках. Не плутай порожній рядок \"\" із nil: це різні стани.",
+            "String — це не просто набір символів. Swift дозволяє вставляти значення в текст через інтерполяцію \(вираз), об'єднувати рядки та записувати багаторядковий текст у потрійних лапках. Не плутай порожній рядок \"\" із nil: це різні стани.",
             """let name = "Софія"
 let lessons = 4
-let message = "Привіт, \\(name)! Ти пройшла \\(lessons) уроки."
+let message = "Привіт, \(name)! Ти пройшла \(lessons) уроки."
 
 let poem = "Swift — це мова,\\nу якій важлива ясність."
 print(message)
 print(poem)""",
-            "Інтерполяція \\(name) вставляє значення, а не друкує назву змінної."),
+            "Інтерполяція \(name) вставляє значення, а не друкує назву змінної."),
         HandbookTopic("tuples","Дані","Кортежі","Кілька значень в одному результаті",
             "Кортеж (tuple) групує кілька значень, які можуть мати різні типи. Він зручний для невеликого локального результату. Якщо дані мають власний сенс і використовуються в багатьох місцях, краще створити struct.",
             """let response = (code: 200, message: "OK")
@@ -163,7 +163,7 @@ func minMax(_ numbers: [Int]) -> (min: Int, max: Int)? {
 }
 
 if let bounds = minMax([8, 3, 12, 5]) {
-    print("Від \\(bounds.min) до \\(bounds.max)")
+    print("Від \(bounds.min) до \(bounds.max)")
 }""",
             "Кортеж — легка упаковка кількох значень, але не заміна повноцінній моделі даних."),
         HandbookTopic("closures","Організація коду","Замикання","Функції, які можна передавати як значення",
@@ -214,7 +214,7 @@ print(playerA.name) // Орися — той самий об'єкт""",
 }
 
 if let user = User(name: "Андрій", age: 21) {
-    print("\\(user.name): \\(user.age)")
+    print("\(user.name): \(user.age)")
 }""",
             "Створи об'єкт так, щоб він одразу був у допустимому стані."),
         HandbookTopic("extensions","Можливості мови","Розширення","Додаємо поведінку до наявного типу",
@@ -227,7 +227,7 @@ if let user = User(name: "Андрій", age: 21) {
 
 let values = [2, 5, 8, 11]
 for value in values {
-    print("\\(value): парне? \\(value.isEven)")
+    print("\(value): парне? \(value.isEven)")
 }""",
             "Додавай у extension поведінку, яка природно належить типу."),
         HandbookTopic("generics","Можливості мови","Узагальнення","Один алгоритм для багатьох типів",
@@ -260,7 +260,7 @@ do {
     let restored = try JSONDecoder().decode(Book.self, from: data)
     print(restored.title)
 } catch {
-    print("Помилка кодування: \\(error)")
+    print("Помилка кодування: \(error)")
 }""",
             "Не зберігай паролі й секретні ключі у звичайному JSON-файлі."),
         HandbookTopic("networking","Сучасний Swift","Мережеві запити","URLSession та перевірка HTTP-відповіді",
@@ -284,7 +284,7 @@ Task {
         let text = try await downloadText()
         print(text.prefix(120))
     } catch {
-        print("Не вдалося завантажити: \\(error)")
+        print("Не вдалося завантажити: \(error)")
     }
 }""",
             "Мережа може зникнути, сервер — повернути помилку, а відповідь — бути не тим форматом."),
@@ -306,7 +306,7 @@ let store = ScoreStore()
 Task {
     await store.add(10)
     let total = await store.currentScore()
-    print("Рахунок: \\(total)")
+    print("Рахунок: \(total)")
 }""",
             "Не роби всі типи actor автоматично. Використовуй ізоляцію там, де справді є спільний змінний стан."),
         HandbookTopic("swiftui-state","Apple-платформи","SwiftUI: стан і події","Як інтерфейс реагує на користувача",
@@ -318,7 +318,7 @@ struct CounterView: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            Text("Натискань: \\(count)")
+            Text("Натискань: \(count)")
             Button("Додати") {
                 count += 1
             }
