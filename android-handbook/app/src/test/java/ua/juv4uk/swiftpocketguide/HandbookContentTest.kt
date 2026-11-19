@@ -11,7 +11,7 @@ class HandbookContentTest {
     }
 
     @Test fun everyTopicHasAnExplanationAndExample() {
-        assertEquals(21, HandbookContent.topics.size)
+        assertEquals(27, HandbookContent.topics.size)
         HandbookContent.topics.forEach {
             assertTrue(it.explanation.isNotBlank())
             assertTrue(it.code.isNotBlank())
