@@ -74,9 +74,22 @@ android-handbook/
 └── settings.gradle.kts
 ```
 
-## Межі застосунку
+## Swift на Android
 
-Це локальний навчальний довідник із тестами, а не інтерактивний компілятор Swift. Приклади можна копіювати, але застосунок не виконує Swift-код. Для запуску й налагодження Swift потрібне відповідне середовище розробки.
+Застосунок містить нативну Swift-бібліотеку, яку CI збирає офіційним Swift 6.4.2 Android SDK для `aarch64-unknown-linux-android30` і пакує як `arm64-v8a`. Кнопка «Перевірити Swift на телефоні» викликає функцію, написану на Swift, через JNI; цей тест виконується локально й не потребує мережі.
+
+Важливо: це доводить виконання скомпільованого Swift-коду на ARM64 Android, але ще **не** є повноцінним локальним компілятором довільного Swift-коду. Вбудований редактор SwiftFiddle поки що компілює онлайн. Для повністю автономної IDE потрібен окремий проєкт збирання host-toolchain/компілятора для Android або інший локальний execution backend.
+
+### Збірка Swift-модуля
+
+У CI використовуються Swift 6.4.2, Swift SDK for Android і Android NDK 30. Вихідна бібліотека лежить у `android-swift-runtime/`; її ARM64 `.so` та JNI-міст автоматично додаються до APK у `app/src/main/jniLibs/arm64-v8a/`.
+
+Локальне складання потребує Linux/macOS host toolchain Swift тієї самої версії, Swift SDK for Android 6.4.2 та Android NDK 30. Приклад команди:
+
+```bash
+cd android-swift-runtime
+swift build --configuration release --swift-sdk swift-6.4.2-RELEASE_android --triple aarch64-unknown-linux-android30 --static-swift-stdlib --product SwiftAndroidRuntime
+```
 
 ## Офіційні матеріали
 

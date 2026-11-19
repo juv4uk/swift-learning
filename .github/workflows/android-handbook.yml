@@ -7,6 +7,7 @@ on:
       - main
     paths:
       - "android-handbook/**"
+      - "android-swift-runtime/**"
       - ".github/workflows/android-handbook.yml"
   pull_request:
     branches: [main]
@@ -62,6 +63,46 @@ jobs:
           base64 --decode ci/debug.keystore.b64 > ci/debug.keystore
           keytool -list -keystore ci/debug.keystore -storepass android -alias androiddebugkey >/dev/null
 
+      - name: Set up Swift 6.4.2
+        uses: swift-actions/setup-swift@v2
+        with:
+          swift-version: "6.4.2"
+
+      - name: Install Swift SDK for Android and NDK 30
+        working-directory: .
+        run: |
+          set -euo pipefail
+          swift sdk install https://download.swift.org/swift-6.4.2-release/android-sdk/swift-6.4.2-RELEASE/swift-6.4.2-RELEASE_android.artifactbundle.tar.gz --checksum 4d6ad63ea74becd58e123ff58b1b48c3be5ec0db0dff0ea5abe37ac007dd3233
+          curl -fSL -o "$RUNNER_TEMP/android-ndk-r30.zip" https://dl.google.com/android/repository/android-ndk-r30-linux.zip
+          unzip -q "$RUNNER_TEMP/android-ndk-r30.zip" -d "$RUNNER_TEMP"
+          echo "ANDROID_NDK_HOME=$RUNNER_TEMP/android-ndk-r30" >> "$GITHUB_ENV"
+          "$HOME/.swiftpm/swift-sdks/swift-6.4.2-RELEASE_android.artifactbundle/swift-android/scripts/setup-android-sdk.sh"
+
+      - name: Cross-compile Swift runtime for Redmi-class ARM64 Android
+        working-directory: .
+        run: |
+          set -euo pipefail
+          swift --version
+          swift sdk list
+          cd android-swift-runtime
+          swift build --configuration release --swift-sdk swift-6.4.2-RELEASE_android --triple aarch64-unknown-linux-android30 --static-swift-stdlib --product SwiftAndroidRuntime
+          cd ..
+          NDK_BIN="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin"
+          NDK_SYSROOT="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
+          SWIFT_LIB="$PWD/android-swift-runtime/.build/aarch64-unknown-linux-android30/release"
+          mkdir -p android-handbook/app/src/main/jniLibs/arm64-v8a
+          cp "$SWIFT_LIB/libSwiftAndroidRuntime.so" android-handbook/app/src/main/jniLibs/arm64-v8a/
+          "$NDK_BIN/aarch64-linux-android30-clang++" -shared -fPIC \
+            -I"$JAVA_HOME/include" -I"$JAVA_HOME/include/linux" \
+            android-handbook/app/src/main/cpp/swift_bridge.cpp \
+            -L"$SWIFT_LIB" -L"$NDK_SYSROOT/usr/lib/aarch64-linux-android" \
+            -lSwiftAndroidRuntime -lc++_shared \
+            -o android-handbook/app/src/main/jniLibs/arm64-v8a/libswiftbridge.so
+          cp "$NDK_SYSROOT/usr/lib/aarch64-linux-android/libc++_shared.so" android-handbook/app/src/main/jniLibs/arm64-v8a/
+          readelf -h android-handbook/app/src/main/jniLibs/arm64-v8a/libSwiftAndroidRuntime.so | grep -q 'AArch64'
+          readelf -h android-handbook/app/src/main/jniLibs/arm64-v8a/libswiftbridge.so | grep -q 'AArch64'
+          ls -lh android-handbook/app/src/main/jniLibs/arm64-v8a/
+
       - name: Run unit tests and build debug APK
         run: gradle --no-daemon --stacktrace :app:testDebugUnitTest :app:assembleDebug
 
@@ -76,15 +117,15 @@ jobs:
 
       - name: Prepare direct-download preview APK
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        run: cp app/build/outputs/apk/debug/app-debug.apk Swift-Pocket-Guide-v1.1.4-preview.apk
+        run: cp app/build/outputs/apk/debug/app-debug.apk Swift-Pocket-Guide-v1.1.5-preview.apk
 
       - name: Publish preview APK as a direct GitHub Release asset
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: swift-pocket-guide-v1.1.4
+          tag_name: swift-pocket-guide-v1.1.5
           target_commitish: ${{ github.sha }}
-          name: Swift Pocket Guide v1.1.4
+          name: Swift Pocket Guide v1.1.5
           generate_release_notes: true
           fail_on_unmatched_files: true
           files: android-handbook/Swift-Pocket-Guide-v1.1.4-preview.apk

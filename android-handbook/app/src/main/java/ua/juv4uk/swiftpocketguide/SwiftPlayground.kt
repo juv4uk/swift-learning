@@ -14,11 +14,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -41,6 +45,7 @@ private class SwiftEditorKeyboardBridge(
 @Composable
 fun SwiftPlaygroundScreen() {
     val context = LocalContext.current
+    var runtimeStatus by remember { mutableStateOf("Натисни, щоб перевірити нативний Swift-модуль.") }
     val webView = remember {
         WebView(context).apply {
             layoutParams = ViewGroup.LayoutParams(
@@ -214,10 +219,26 @@ fun SwiftPlaygroundScreen() {
                 style = MaterialTheme.typography.titleMedium
             )
             Text(
-                "Торкнися поля коду — клавіатура відкриється автоматично. Кнопка Run запускає програму онлайн; потрібен інтернет.",
+                "Редактор SwiftFiddle компілює код онлайн. Нижче — окремий тест Swift-бібліотеки, зібраної для ARM64 Android і виконуваної локально.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+            Button(onClick = {
+                runtimeStatus = try {
+                    val result = SwiftNative.nativeAdd(20, 22)
+                    val major = SwiftNative.nativeMajorVersion()
+                    if (result == 42 && major == 6) {
+                        "Успіх: Swift 6 виконав 20 + 22 = $result без мережі."
+                    } else {
+                        "Несподіваний результат: $result (Swift $major)."
+                    }
+                } catch (error: Throwable) {
+                    "Нативний модуль недоступний: ${error.javaClass.simpleName}: ${error.message ?: "помилка завантаження"}"
+                }
+            }) {
+                Text("Перевірити Swift на телефоні")
+            }
+            Text(runtimeStatus, style = MaterialTheme.typography.bodySmall)
         }
         AndroidView(
             factory = { webView },
