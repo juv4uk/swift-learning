@@ -146,10 +146,7 @@ Task {
 let lessons = 4
 let message = "Привіт, \\(name)! Ти пройшла \\(lessons) уроки."
 
-let poem = """
-Swift — це мова,
-у якій важлива ясність.
-"""
+let poem = "Swift — це мова,\\nу якій важлива ясність."
 print(message)
 print(poem)""",
             "Інтерполяція \\(name) вставляє значення, а не друкує назву змінної."),
@@ -160,8 +157,10 @@ print(response.code)
 print(response.message)
 
 func minMax(_ numbers: [Int]) -> (min: Int, max: Int)? {
-    guard !numbers.isEmpty else { return nil }
-    return (numbers.min()!, numbers.max()!)
+    guard let minimum = numbers.min(), let maximum = numbers.max() else {
+        return nil
+    }
+    return (minimum, maximum)
 }
 
 if let bounds = minMax([8, 3, 12, 5]) {
@@ -289,8 +288,10 @@ Task {
         print("Не вдалося завантажити: \\(error)")
     }
 }""",
-            "Мережа може зникнути, сервер — повернути помилку, а відповідь — бути не тим форматом.")
-(
+            "Мережа може зникнути, сервер — повернути помилку, а відповідь — бути не тим форматом."),
+    )
+
+    val glossary = listOf(
         GlossaryEntry("Алгоритм","Послідовність кроків для розв'язання задачі."),
         GlossaryEntry("Аргумент","Конкретне значення, яке передають параметру під час виклику функції."),
         GlossaryEntry("Змінна","Іменоване місце для значення, яке може змінюватися."),
