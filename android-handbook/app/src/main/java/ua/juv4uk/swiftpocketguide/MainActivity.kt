@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 
 private enum class GuideTab(val title: String, val symbol: String) {
     HOME("Головна", "⌂"), TOPICS("Теми", "▤"), QUIZ("Тест", "?"), MORE("Ще", "⋯"),
-    GLOSSARY("Словник", "А"), PROGRESS("Прогрес", "✓"), PLAYGROUND("Swift IDE", "▶")
+    GLOSSARY("Словник", "А"), PROGRESS("Прогрес", "✓"), PLAYGROUND("Swift", "▶")
 }
 
 class MainActivity : ComponentActivity() {
@@ -137,7 +137,7 @@ private fun HomeScreen(
                     Spacer(Modifier.height(16.dp))
                     Button(onClick = onOpenTopics) { Text("Почати навчання") }
                     OutlinedButton(onClick = onOpenQuiz, modifier = Modifier.fillMaxWidth()) { Text("Перевірити знання →") }
-                    Button(onClick = onOpenPlayground, modifier = Modifier.fillMaxWidth()) { Text("Відкрити Swift IDE ▶") }
+                    Button(onClick = onOpenPlayground, modifier = Modifier.fillMaxWidth()) { Text("Відкрити Swift на пристрої ▶") }
                 }
             }
         }
@@ -173,7 +173,7 @@ private fun MoreScreen(onOpen: (GuideTab) -> Unit) {
     ) {
         item {
             Text("Інші розділи", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-            Text("Додаткові інструменти та довідкові матеріали.")
+            Text("Навчальні інструменти й локальна лабораторія Swift.")
         }
         item {
             Card(onClick = { onOpen(GuideTab.GLOSSARY) }, modifier = Modifier.fillMaxWidth()) {
@@ -194,8 +194,8 @@ private fun MoreScreen(onOpen: (GuideTab) -> Unit) {
         item {
             Card(onClick = { onOpen(GuideTab.PLAYGROUND) }, modifier = Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text("▶ Swift IDE", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-                    Text("Редактор коду та запуск програм онлайн.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("▶ Swift на пристрої", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                    Text("Локальна перевірка нативного Swift-модуля.", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
         }
