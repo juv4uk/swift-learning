@@ -83,3 +83,8 @@ android-handbook/
 - [Android Gradle Plugin 9.4.0](https://developer.android.com/build/releases/agp-9-4-0-release-notes)
 - [Jetpack Compose setup](https://developer.android.com/develop/ui/compose/setup-compose-dependencies-and-compiler)
 - [Compose BOM](https://developer.android.com/develop/ui/compose/bom)
+
+
+## Swift IDE
+
+The Android app includes an embedded SwiftFiddle playground for editing, compiling, and running real Swift snippets. An internet connection is required; source code is sent to SwiftFiddle's server for execution.
