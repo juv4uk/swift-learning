@@ -58,13 +58,29 @@ jobs:
       - name: Run unit tests and build debug APK
         run: gradle --no-daemon --stacktrace :app:testDebugUnitTest :app:assembleDebug
 
-      - name: Upload debug APK
+      - name: Upload debug APK for pull request inspection
+        if: ${{ github.event_name == 'pull_request' }}
         uses: actions/upload-artifact@v4
         with:
           name: swift-pocket-guide-debug
           path: android-handbook/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
           retention-days: 14
+
+      - name: Prepare direct-download debug APK
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        run: cp app/build/outputs/apk/debug/app-debug.apk Swift-Pocket-Guide-v1.1.1-debug.apk
+
+      - name: Publish debug APK as a direct GitHub Release asset
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: swift-pocket-guide-v1.1.1
+          target_commitish: ${{ github.sha }}
+          name: Swift Pocket Guide v1.1.1
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+          files: android-handbook/Swift-Pocket-Guide-v1.1.1-debug.apk
 
       - name: Prepare persistent release signing key
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && env.ANDROID_KEYSTORE_BASE64 != '' && env.ANDROID_KEYSTORE_PASSWORD != '' && env.ANDROID_KEY_ALIAS != '' && env.ANDROID_KEY_PASSWORD != '' }}
@@ -98,4 +114,4 @@ jobs:
 
       - name: Explain missing release signing key
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && !(env.ANDROID_KEYSTORE_BASE64 != '' && env.ANDROID_KEYSTORE_PASSWORD != '' && env.ANDROID_KEY_ALIAS != '' && env.ANDROID_KEY_PASSWORD != '') }}
-        run: echo "Debug APK built. Signed release is skipped until Android signing secrets are configured."
+        run: echo "Debug APK published as a direct download. Signed release is skipped until Android signing secrets are configured."
