@@ -24,6 +24,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 
+/** Requests the Android IME only after the embedded Monaco editor receives focus. */
 private class SwiftEditorKeyboardBridge(
     private val webView: WebView,
     private val inputMethodManager: InputMethodManager
