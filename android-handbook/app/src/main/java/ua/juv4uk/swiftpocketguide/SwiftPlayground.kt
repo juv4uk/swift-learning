@@ -116,10 +116,11 @@ fun SwiftPlaygroundScreen() {
                               header .row > .col > .d-inline-block:nth-child(2) > * {
                                 margin: 2px !important;
                               }
-                              #stop-button, #clear-console-button, #format-button,
-                              #lang-server-status, #share-button, #settings-button,
-                              #help-button, footer {
+                              footer {
                                 display: none !important;
+                              }
+                              header .btn {
+                                white-space: nowrap !important;
                               }
                               #run-button {
                                 min-width: 84px !important;
