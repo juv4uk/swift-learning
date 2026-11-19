@@ -99,9 +99,13 @@ jobs:
           cd ..
           NDK_BIN="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin"
           NDK_SYSROOT="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
-          SWIFT_LIB="$PWD/android-swift-runtime/.build/aarch64-unknown-linux-android30/release"
+          echo "SwiftPM build products:"
+          find android-swift-runtime/.build -type f \( -name '*.so' -o -name '*SwiftAndroidRuntime*' \) -print
+          SWIFT_RUNTIME="$(find android-swift-runtime/.build -type f -name 'libSwiftAndroidRuntime.so' -print -quit)"
+          test -n "$SWIFT_RUNTIME"
+          SWIFT_LIB="$(dirname "$SWIFT_RUNTIME")"
           mkdir -p android-handbook/app/src/main/jniLibs/arm64-v8a
-          cp "$SWIFT_LIB/libSwiftAndroidRuntime.so" android-handbook/app/src/main/jniLibs/arm64-v8a/
+          cp "$SWIFT_RUNTIME" android-handbook/app/src/main/jniLibs/arm64-v8a/
           "$NDK_BIN/aarch64-linux-android30-clang++" -shared -fPIC \
             -I"$JAVA_HOME/include" -I"$JAVA_HOME/include/linux" \
             android-handbook/app/src/main/cpp/swift_bridge.cpp \
