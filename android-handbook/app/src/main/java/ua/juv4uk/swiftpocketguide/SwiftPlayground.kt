@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.weight
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,8 +23,9 @@ import androidx.compose.ui.viewinterop.AndroidView
 
 @Composable
 fun SwiftPlaygroundScreen() {
+    val context = androidx.compose.ui.platform.LocalContext.current
     val webView = remember {
-        WebView(androidx.compose.ui.platform.LocalContext.current).apply {
+        WebView(context).apply {
             layoutParams = ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
@@ -76,7 +78,7 @@ fun SwiftPlaygroundScreen() {
         AndroidView(
             factory = { webView },
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
                 .weight(1f)
         )
     }
