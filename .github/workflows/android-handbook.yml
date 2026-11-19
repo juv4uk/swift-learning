@@ -1,6 +1,12 @@
 name: Android handbook build
 
 on:
+  push:
+    branches:
+      - feature/android-swift-pocket-guide
+    paths:
+      - "android-handbook/**"
+      - ".github/workflows/android-handbook.yml"
   pull_request:
     branches: [main]
     paths:
@@ -11,7 +17,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: android-handbook-${{ github.event.pull_request.number }}
+  group: android-handbook-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
