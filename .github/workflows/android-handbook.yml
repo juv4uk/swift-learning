@@ -67,23 +67,26 @@ jobs:
           retention-days: 14
 
       - name: Prepare persistent release signing key
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && env.ANDROID_KEYSTORE_BASE64 != '' }}
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && env.ANDROID_KEYSTORE_BASE64 != '' && env.ANDROID_KEYSTORE_PASSWORD != '' && env.ANDROID_KEY_ALIAS != '' && env.ANDROID_KEY_PASSWORD != '' }}
         working-directory: .
         env:
           ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/swift-pocket-guide-release.jks
         run: |
-          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$ANDROID_KEYSTORE_PATH"
+          set -euo pipefail
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$ANDROID_KEYSTORE_PATH"
+          test -s "$ANDROID_KEYSTORE_PATH"
+          keytool -list -keystore "$ANDROID_KEYSTORE_PATH" -storepass "$ANDROID_KEYSTORE_PASSWORD" -alias "$ANDROID_KEY_ALIAS" >/dev/null
           echo "ANDROID_KEYSTORE_PATH=$ANDROID_KEYSTORE_PATH" >> "$GITHUB_ENV"
           echo "ANDROID_KEYSTORE_PASSWORD=$ANDROID_KEYSTORE_PASSWORD" >> "$GITHUB_ENV"
           echo "ANDROID_KEY_ALIAS=$ANDROID_KEY_ALIAS" >> "$GITHUB_ENV"
           echo "ANDROID_KEY_PASSWORD=$ANDROID_KEY_PASSWORD" >> "$GITHUB_ENV"
 
       - name: Build signed release APK
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && env.ANDROID_KEYSTORE_BASE64 != '' }}
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && env.ANDROID_KEYSTORE_BASE64 != '' && env.ANDROID_KEYSTORE_PASSWORD != '' && env.ANDROID_KEY_ALIAS != '' && env.ANDROID_KEY_PASSWORD != '' }}
         run: gradle --no-daemon --stacktrace :app:assembleRelease
 
       - name: Upload signed APK to GitHub Release
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && env.ANDROID_KEYSTORE_BASE64 != '' }}
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && env.ANDROID_KEYSTORE_BASE64 != '' && env.ANDROID_KEYSTORE_PASSWORD != '' && env.ANDROID_KEY_ALIAS != '' && env.ANDROID_KEY_PASSWORD != '' }}
         uses: softprops/action-gh-release@v2
         with:
           tag_name: swift-pocket-guide-v1.1.1
@@ -94,5 +97,5 @@ jobs:
           files: android-handbook/app/build/outputs/apk/release/*.apk
 
       - name: Explain missing release signing key
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && env.ANDROID_KEYSTORE_BASE64 == '' }}
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && !(env.ANDROID_KEYSTORE_BASE64 != '' && env.ANDROID_KEYSTORE_PASSWORD != '' && env.ANDROID_KEY_ALIAS != '' && env.ANDROID_KEY_PASSWORD != '') }}
         run: echo "Debug APK built. Signed release is skipped until Android signing secrets are configured."
