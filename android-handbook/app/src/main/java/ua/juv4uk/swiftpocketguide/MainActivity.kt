@@ -96,7 +96,7 @@ private fun SwiftPocketGuideApp() {
                         onBookmark = { toggle(bookmarks, topic.id, "bookmarks") { bookmarks = it } }
                     )
                 } else when (selectedTab) {
-                    GuideTab.HOME -> HomeScreen(completed.size, { selectedTab = GuideTab.TOPICS }, { selectedTab = GuideTab.QUIZ }) { selectedTopic = it }
+                    GuideTab.HOME -> HomeScreen(completed.size, { selectedTab = GuideTab.TOPICS }, { selectedTab = GuideTab.QUIZ }, { selectedTab = GuideTab.PLAYGROUND }) { selectedTopic = it }
                     GuideTab.TOPICS -> TopicsScreen(search, { search = it }, completed, bookmarks) { selectedTopic = it }
                     GuideTab.QUIZ -> QuizScreen()
                     GuideTab.PLAYGROUND -> SwiftPlaygroundScreen()
@@ -111,7 +111,7 @@ private fun SwiftPocketGuideApp() {
 @Composable
 private fun HomeScreen(
     completedCount: Int, onOpenTopics: () -> Unit, onOpenQuiz: () -> Unit,
-    onOpenTopic: (HandbookTopic) -> Unit
+    onOpenPlayground: () -> Unit, onOpenTopic: (HandbookTopic) -> Unit
 ) {
     LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         item {
@@ -123,6 +123,7 @@ private fun HomeScreen(
                     Spacer(Modifier.height(16.dp))
                     Button(onClick = onOpenTopics) { Text("Почати навчання") }
                     OutlinedButton(onClick = onOpenQuiz, modifier = Modifier.fillMaxWidth()) { Text("Перевірити знання →") }
+                    Button(onClick = onOpenPlayground, modifier = Modifier.fillMaxWidth()) { Text("Відкрити Swift IDE ▶") }
                 }
             }
         }
