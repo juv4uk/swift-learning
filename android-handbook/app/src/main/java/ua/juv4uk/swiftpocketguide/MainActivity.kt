@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 
 private enum class GuideTab(val title: String, val symbol: String) {
     HOME("Головна", "⌂"), TOPICS("Теми", "▤"), QUIZ("Тест", "?"),
-    GLOSSARY("Словник", "А"), PROGRESS("Прогрес", "✓")
+    GLOSSARY("Словник", "А"), PROGRESS("Прогрес", "✓"), PLAYGROUND("Swift IDE", "▶")
 }
 
 class MainActivity : ComponentActivity() {
@@ -99,6 +99,7 @@ private fun SwiftPocketGuideApp() {
                     GuideTab.HOME -> HomeScreen(completed.size, { selectedTab = GuideTab.TOPICS }, { selectedTab = GuideTab.QUIZ }) { selectedTopic = it }
                     GuideTab.TOPICS -> TopicsScreen(search, { search = it }, completed, bookmarks) { selectedTopic = it }
                     GuideTab.QUIZ -> QuizScreen()
+                    GuideTab.PLAYGROUND -> SwiftPlaygroundScreen()
                     GuideTab.GLOSSARY -> GlossaryScreen(search, { search = it })
                     GuideTab.PROGRESS -> ProgressScreen(completed, bookmarks) { selectedTopic = it }
                 }
