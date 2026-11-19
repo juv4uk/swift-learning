@@ -47,8 +47,8 @@ jobs:
         with:
           packages: "platform-tools"
 
-      - name: Install Android SDK Platform 36
-        run: sdkmanager "platforms;android-36"
+      - name: Install Android SDK Platform 37.2
+        run: sdkmanager "platforms;android-37.2"
 
       - name: Run unit tests and build debug APK
         run: gradle --no-daemon --stacktrace :app:testDebugUnitTest :app:assembleDebug
