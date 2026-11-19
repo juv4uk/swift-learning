@@ -56,6 +56,12 @@ jobs:
       - name: Install Android SDK Platform 37.2
         run: sdkmanager "platforms;android-37.2"
 
+      - name: Restore stable preview signing key
+        run: |
+          set -euo pipefail
+          base64 --decode ci/debug.keystore.b64 > ci/debug.keystore
+          keytool -list -keystore ci/debug.keystore -storepass android -alias androiddebugkey >/dev/null
+
       - name: Run unit tests and build debug APK
         run: gradle --no-daemon --stacktrace :app:testDebugUnitTest :app:assembleDebug
 
@@ -63,25 +69,25 @@ jobs:
         if: ${{ github.event_name == 'pull_request' }}
         uses: actions/upload-artifact@v4
         with:
-          name: swift-pocket-guide-debug
+          name: swift-pocket-guide-preview
           path: android-handbook/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
           retention-days: 14
 
-      - name: Prepare direct-download debug APK
+      - name: Prepare direct-download preview APK
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        run: cp app/build/outputs/apk/debug/app-debug.apk Swift-Pocket-Guide-v1.1.3-debug.apk
+        run: cp app/build/outputs/apk/debug/app-debug.apk Swift-Pocket-Guide-v1.1.4-preview.apk
 
-      - name: Publish debug APK as a direct GitHub Release asset
+      - name: Publish preview APK as a direct GitHub Release asset
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: swift-pocket-guide-v1.1.3
+          tag_name: swift-pocket-guide-v1.1.4
           target_commitish: ${{ github.sha }}
-          name: Swift Pocket Guide v1.1.3
+          name: Swift Pocket Guide v1.1.4
           generate_release_notes: true
           fail_on_unmatched_files: true
-          files: android-handbook/Swift-Pocket-Guide-v1.1.3-debug.apk
+          files: android-handbook/Swift-Pocket-Guide-v1.1.4-preview.apk
 
       - name: Prepare persistent release signing key
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && env.ANDROID_KEYSTORE_BASE64 != '' && env.ANDROID_KEYSTORE_PASSWORD != '' && env.ANDROID_KEY_ALIAS != '' && env.ANDROID_KEY_PASSWORD != '' }}
@@ -106,13 +112,13 @@ jobs:
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && env.ANDROID_KEYSTORE_BASE64 != '' && env.ANDROID_KEYSTORE_PASSWORD != '' && env.ANDROID_KEY_ALIAS != '' && env.ANDROID_KEY_PASSWORD != '' }}
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: swift-pocket-guide-v1.1.3
+          tag_name: swift-pocket-guide-v1.1.4
           target_commitish: ${{ github.sha }}
-          name: Swift Pocket Guide v1.1.3
+          name: Swift Pocket Guide v1.1.4
           generate_release_notes: true
           fail_on_unmatched_files: true
           files: android-handbook/app/build/outputs/apk/release/*.apk
 
       - name: Explain missing release signing key
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && !(env.ANDROID_KEYSTORE_BASE64 != '' && env.ANDROID_KEYSTORE_PASSWORD != '' && env.ANDROID_KEY_ALIAS != '' && env.ANDROID_KEY_PASSWORD != '') }}
-        run: echo "Debug APK published as a direct download. Signed release is skipped until Android signing secrets are configured."
+        run: echo "Installable preview APK published with a stable preview key. Production-signed release is skipped until production signing secrets are configured."
