@@ -1,8 +1,12 @@
 # Android release signing
 
-The workflow publishes an install-over-update APK only when all four GitHub Actions
-secrets are configured. The keystore is a long-lived signing identity: back it up
-securely and never commit it to this repository.
+The workflow always publishes a directly downloadable debug APK to the GitHub
+Release after a change reaches `main`. This debug build is useful for trying the
+app, but it is not a stable update channel because its CI signing key is temporary.
+
+The workflow publishes an install-over-update release APK only when all four
+GitHub Actions secrets are configured. The keystore is a long-lived signing
+identity: back it up securely and never commit it to this repository.
 
 ## 1. Create the keystore locally
 
@@ -52,5 +56,8 @@ cannot update it with a different signing key. For the one-time transition, unin
 v1.1.0 and install the first v1.1.1 APK signed with this keystore. Every subsequent
 release signed with the same keystore can update the installed app normally.
 
-The PR workflow builds and tests a debug APK. The signed release APK is published
-only after the change reaches `main` and all four secrets are present.
+The pull-request workflow builds and tests a debug APK as a CI artifact. After the
+change is merged into `main`, the workflow publishes
+`Swift-Pocket-Guide-v1.1.1-debug.apk` as a direct GitHub Release download (not an
+Actions ZIP artifact). If the four signing secrets are present, it also attaches the
+signed release APK to that same release.
