@@ -5,6 +5,7 @@ plugins {
 
 val releaseStoreFile = System.getenv("ANDROID_KEYSTORE_PATH")
 val releaseSigningConfigured = !releaseStoreFile.isNullOrBlank()
+val stableDebugStoreFile = rootProject.file("ci/debug.keystore")
 
 android {
     namespace = "ua.juv4uk.swiftpocketguide"
@@ -18,11 +19,17 @@ android {
         minSdk = 26
         targetSdk = 36
         // Increase versionCode for every published Android update.
-        versionCode = 4
-        versionName = "1.1.3"
+        versionCode = 5
+        versionName = "1.1.4"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     signingConfigs {
+        create("stableDebug") {
+            storeFile = stableDebugStoreFile
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
         if (releaseSigningConfigured) {
             create("release") {
                 storeFile = file(releaseStoreFile!!)
@@ -33,6 +40,12 @@ android {
         }
     }
     buildTypes {
+        getByName("debug") {
+            // Keep preview installs separate from any older app signed with an unknown key.
+            applicationIdSuffix = ".preview"
+            signingConfig = signingConfigs.getByName("stableDebug")
+            resValue("string", "app_name", "Swift Pocket Guide Preview")
+        }
         getByName("release") {
             isMinifyEnabled = false
             if (releaseSigningConfigured) {
