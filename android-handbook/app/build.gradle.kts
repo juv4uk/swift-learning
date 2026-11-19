@@ -4,7 +4,11 @@ plugins {
 }
 android {
     namespace = "ua.juv4uk.swiftpocketguide"
-    compileSdk = 36
+    compileSdk {
+        version = release(37) {
+            minorApiLevel = 2
+        }
+    }
     defaultConfig {
         applicationId = "ua.juv4uk.swiftpocketguide"
         minSdk = 26
