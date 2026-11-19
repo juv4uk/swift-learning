@@ -25,7 +25,7 @@ concurrency:
 jobs:
   build:
     name: Test and assemble APK
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     env:
       ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
       ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
