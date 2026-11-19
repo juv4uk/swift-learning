@@ -327,6 +327,75 @@ struct CounterView: View {
     }
 }""",
             "View — це опис інтерфейсу, а не місце для довготривалої бізнес-логіки. Для передавання стану дочірньому View вивчи @Binding."),
+        HandbookTopic("main-actor","Сучасний Swift","@MainActor та інтерфейс","Оновлюємо UI на головному акторі",
+            "Інтерфейсні фреймворки очікують, що зміни стану UI відбуваються на головному акторі. @MainActor ізолює тип або функцію на MainActor. Це не те саме, що просто запустити довільний код у фоновому потоці: ізоляція задає правило доступу до стану.",
+            """@MainActor
+final class ProfileModel {
+    private(set) var name = "Гість"
+
+    func rename(to newName: String) {
+        name = newName
+    }
+}
+
+let model = ProfileModel()
+Task { @MainActor in
+    model.rename(to: "Олена")
+    print(model.name)
+}""",
+            "Позначай @MainActor саме той стан і код, які належать UI. Не блокуй головний актор довгими обчисленнями."),
+        HandbookTopic("task-cancellation","Сучасний Swift","Скасування задач","Не витрачаємо ресурси даремно",
+            "Скасування в Swift Concurrency кооперативне: Task позначається як скасована, але код має реагувати на це. Довгі цикли можуть періодично викликати Task.checkCancellation(). Асинхронні операції на кшталт Task.sleep кидають CancellationError після скасування.",
+            """func preparePreview() async throws -> String {
+    try Task.checkCancellation()
+    try await Task.sleep(for: .seconds(1))
+    try Task.checkCancellation()
+    return "Попередній перегляд готовий"
+}
+
+let task = Task {
+    do {
+        print(try await preparePreview())
+    } catch is CancellationError {
+        print("Операцію скасовано")
+    } catch {
+        print("Інша помилка: \\(error)")
+    }
+}
+
+// За потреби власник може викликати:
+// task.cancel()""",
+            "Не створюй нескінченні задачі без життєвого циклу. Скасовуй роботу, коли результат більше не потрібен."),
+        HandbookTopic("sendable","Сучасний Swift","Sendable і передавання даних","Безпечні значення між задачами",
+            "Sendable описує типи, значення яких можна безпечно передавати між ізольованими контекстами конкурентного виконання. Структури з незмінними Sendable-полями часто відповідають цьому протоколу автоматично. Для власного спільного змінного стану краще використовувати actor, а не оголошувати тип @unchecked Sendable без доведених гарантій.",
+            """struct NotificationMessage: Sendable {
+    let title: String
+    let body: String
+}
+
+actor NotificationQueue {
+    private var items: [NotificationMessage] = []
+
+    func enqueue(_ message: NotificationMessage) {
+        items.append(message)
+    }
+
+    func count() -> Int {
+        items.count
+    }
+}
+
+let queue = NotificationQueue()
+Task {
+    await queue.enqueue(
+        NotificationMessage(
+            title: "Вітаємо",
+            body: "Навчання триває!"
+        )
+    )
+    print(await queue.count())
+}""",
+            "Sendable — це гарантія безпечного передавання, а не команда запускати код паралельно."),
         HandbookTopic("unit-tests","Якість коду","Модульні тести","Перевіряємо поведінку автоматично",
             "Модульний тест перевіряє невелику одиницю поведінки ізольовано від решти системи. Тест має мати зрозумілий сценарій, підготовку даних, виконання та перевірку результату. Тестуй також межові випадки: порожні дані, нуль, неправильний ввід.",
             """import XCTest
@@ -388,6 +457,9 @@ final class PriceCalculatorTests: XCTestCase {
         GlossaryEntry("@State","Властивість SwiftUI для локального стану View."),
         GlossaryEntry("@Binding","Посилання на стан, яким володіє інший компонент інтерфейсу."),
         GlossaryEntry("Модульний тест","Автоматична перевірка невеликої одиниці поведінки програми."),
-        GlossaryEntry("Гонка даних","Помилка конкурентного доступу, коли результат залежить від непередбачуваного порядку операцій.")
+        GlossaryEntry("Гонка даних","Помилка конкурентного доступу, коли результат залежить від непередбачуваного порядку операцій."),
+        GlossaryEntry("@MainActor","Актор ізоляції, який координує доступ до коду та стану головного актора."),
+        GlossaryEntry("CancellationError","Помилка, яку асинхронна операція може кинути у відповідь на скасування задачі."),
+        GlossaryEntry("Sendable","Протокол Swift для типів, значення яких безпечно передавати між конкурентними контекстами.")
     )
 }
