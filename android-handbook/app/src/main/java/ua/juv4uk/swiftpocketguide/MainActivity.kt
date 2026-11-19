@@ -183,7 +183,7 @@ private fun TopicDetail(
 ) {
     LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         item {
-            AssistChip(onClick = {}, label = { Text(topic.category) })
+            Text(topic.category, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
             Text(topic.subtitle, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
             Text(topic.explanation, style = MaterialTheme.typography.bodyLarge)
         }
