@@ -63,10 +63,18 @@ jobs:
           base64 --decode ci/debug.keystore.b64 > ci/debug.keystore
           keytool -list -keystore ci/debug.keystore -storepass android -alias androiddebugkey >/dev/null
 
-      - name: Set up Swift 6.4.2
-        uses: swift-actions/setup-swift@v2
-        with:
-          swift-version: "6.4.2"
+      - name: Install Swift 6.4.2 with Swiftly
+        working-directory: .
+        run: |
+          set -euo pipefail
+          curl -fSL https://download.swift.org/swiftly/linux/swiftly-x86_64.tar.gz -o "$RUNNER_TEMP/swiftly.tar.gz"
+          tar -xzf "$RUNNER_TEMP/swiftly.tar.gz" -C "$RUNNER_TEMP"
+          cd "$RUNNER_TEMP"
+          ./swiftly init --quiet-shell-followup --assume-yes --skip-install
+          . "$HOME/.local/share/swiftly/env.sh"
+          swiftly install --use 6.4.2
+          swift --version
+          echo "$HOME/.local/share/swiftly/bin" >> "$GITHUB_PATH"
 
       - name: Install Swift SDK for Android and NDK 30
         working-directory: .
