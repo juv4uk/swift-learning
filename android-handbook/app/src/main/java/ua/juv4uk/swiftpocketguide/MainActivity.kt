@@ -2,6 +2,7 @@ package ua.juv4uk.swiftpocketguide
 
 import android.content.Context
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
@@ -14,12 +15,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 private enum class GuideTab(val title: String, val symbol: String) {
-    HOME("Головна", "⌂"), TOPICS("Теми", "▤"), GLOSSARY("Словник", "А"), PROGRESS("Прогрес", "✓")
+    HOME("Головна", "⌂"), TOPICS("Теми", "▤"), QUIZ("Тест", "?"),
+    GLOSSARY("Словник", "А"), PROGRESS("Прогрес", "✓")
 }
 
 class MainActivity : ComponentActivity() {
@@ -36,6 +40,7 @@ private fun SwiftPocketGuideApp() {
     val preferences = remember { context.getSharedPreferences("swift-pocket-guide", Context.MODE_PRIVATE) }
     var completed by remember { mutableStateOf(preferences.getStringSet("completed", emptySet())?.toSet() ?: emptySet()) }
     var bookmarks by remember { mutableStateOf(preferences.getStringSet("bookmarks", emptySet())?.toSet() ?: emptySet()) }
+    var darkTheme by remember { mutableStateOf(preferences.getBoolean("dark_theme", false)) }
     var selectedTab by remember { mutableStateOf(GuideTab.HOME) }
     var selectedTopic by remember { mutableStateOf<HandbookTopic?>(null) }
     var search by remember { mutableStateOf("") }
@@ -46,7 +51,7 @@ private fun SwiftPocketGuideApp() {
         preferences.edit().putStringSet(key, next).apply()
     }
 
-    MaterialTheme {
+    MaterialTheme(colorScheme = if (darkTheme) darkColorScheme() else lightColorScheme()) {
         Scaffold(
             topBar = {
                 TopAppBar(
@@ -57,9 +62,13 @@ private fun SwiftPocketGuideApp() {
                         }
                     },
                     navigationIcon = {
-                        if (selectedTopic != null) {
-                            TextButton(onClick = { selectedTopic = null }) { Text("← Назад") }
-                        }
+                        if (selectedTopic != null) TextButton(onClick = { selectedTopic = null }) { Text("← Назад") }
+                    },
+                    actions = {
+                        IconButton(onClick = {
+                            darkTheme = !darkTheme
+                            preferences.edit().putBoolean("dark_theme", darkTheme).apply()
+                        }) { Text(if (darkTheme) "☀" else "☾", style = MaterialTheme.typography.titleLarge) }
                     }
                 )
             },
@@ -69,7 +78,7 @@ private fun SwiftPocketGuideApp() {
                         GuideTab.entries.forEach { tab ->
                             NavigationBarItem(
                                 selected = selectedTab == tab,
-                                onClick = { selectedTab = tab; search = "" },
+                                onClick = { selectedTab = tab },
                                 icon = { Text(tab.symbol) },
                                 label = { Text(tab.title) }
                             )
@@ -87,8 +96,9 @@ private fun SwiftPocketGuideApp() {
                         onBookmark = { toggle(bookmarks, topic.id, "bookmarks") { bookmarks = it } }
                     )
                 } else when (selectedTab) {
-                    GuideTab.HOME -> HomeScreen(completed.size, { selectedTab = GuideTab.TOPICS }) { selectedTopic = it }
+                    GuideTab.HOME -> HomeScreen(completed.size, { selectedTab = GuideTab.TOPICS }, { selectedTab = GuideTab.QUIZ }) { selectedTopic = it }
                     GuideTab.TOPICS -> TopicsScreen(search, { search = it }, completed, bookmarks) { selectedTopic = it }
+                    GuideTab.QUIZ -> QuizScreen()
                     GuideTab.GLOSSARY -> GlossaryScreen(search, { search = it })
                     GuideTab.PROGRESS -> ProgressScreen(completed, bookmarks) { selectedTopic = it }
                 }
@@ -98,7 +108,10 @@ private fun SwiftPocketGuideApp() {
 }
 
 @Composable
-private fun HomeScreen(completedCount: Int, onOpenTopics: () -> Unit, onOpenTopic: (HandbookTopic) -> Unit) {
+private fun HomeScreen(
+    completedCount: Int, onOpenTopics: () -> Unit, onOpenQuiz: () -> Unit,
+    onOpenTopic: (HandbookTopic) -> Unit
+) {
     LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         item {
             Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer), shape = RoundedCornerShape(28.dp)) {
@@ -108,6 +121,7 @@ private fun HomeScreen(completedCount: Int, onOpenTopics: () -> Unit, onOpenTopi
                     Text("Короткі пояснення, приклади коду та словник — усе під рукою, навіть офлайн.")
                     Spacer(Modifier.height(16.dp))
                     Button(onClick = onOpenTopics) { Text("Почати навчання") }
+                    OutlinedButton(onClick = onOpenQuiz, modifier = Modifier.fillMaxWidth()) { Text("Перевірити знання →") }
                 }
             }
         }
@@ -145,14 +159,10 @@ private fun TopicsScreen(
             (search.isBlank() || listOf(topic.title, topic.subtitle, topic.explanation, topic.category).any { it.contains(search, true) })
     }
     LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        item {
-            OutlinedTextField(search, onSearch, Modifier.fillMaxWidth(), label = { Text("Знайти тему") }, singleLine = true)
-        }
+        item { OutlinedTextField(search, onSearch, Modifier.fillMaxWidth(), label = { Text("Знайти тему") }, singleLine = true) }
         item {
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                items(categories) { item ->
-                    FilterChip(selected = category == item, onClick = { category = item }, label = { Text(item) })
-                }
+                items(categories) { item -> FilterChip(selected = category == item, onClick = { category = item }, label = { Text(item) }) }
             }
         }
         items(filtered, key = { it.id }) { topic -> TopicCard(topic, topic.id in completed, topic.id in bookmarks) { onOpen(topic) } }
@@ -181,6 +191,8 @@ private fun TopicDetail(
     topic: HandbookTopic, isCompleted: Boolean, isBookmarked: Boolean,
     onComplete: () -> Unit, onBookmark: () -> Unit
 ) {
+    val clipboard = LocalClipboardManager.current
+    val context = LocalContext.current
     LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         item {
             Text(topic.category, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
@@ -188,7 +200,14 @@ private fun TopicDetail(
             Text(topic.explanation, style = MaterialTheme.typography.bodyLarge)
         }
         item {
-            Text("Приклад коду", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("Приклад коду", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                Spacer(Modifier.weight(1f))
+                TextButton(onClick = {
+                    clipboard.setText(AnnotatedString(topic.code))
+                    Toast.makeText(context, "Код скопійовано", Toast.LENGTH_SHORT).show()
+                }) { Text("Копіювати") }
+            }
             Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant), modifier = Modifier.fillMaxWidth()) {
                 SelectionContainer { Text(topic.code, Modifier.padding(16.dp), style = MaterialTheme.typography.bodyMedium) }
             }
@@ -203,6 +222,74 @@ private fun TopicDetail(
             }
             OutlinedButton(onClick = onBookmark, modifier = Modifier.fillMaxWidth()) {
                 Text(if (isBookmarked) "Прибрати із закладок ★" else "Додати в закладки ☆")
+            }
+        }
+    }
+}
+
+@Composable
+private fun QuizScreen() {
+    val questions = QuizContent.questions
+    var questionIndex by remember { mutableIntStateOf(0) }
+    var selectedAnswer by remember { mutableIntStateOf(-1) }
+    var score by remember { mutableIntStateOf(0) }
+    var finished by remember { mutableStateOf(false) }
+    val question = questions[questionIndex]
+
+    LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+        item {
+            Text("Мінітест Swift", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+            Text("Питання ${questionIndex + 1} із ${questions.size} · правильних відповідей: $score")
+            LinearProgressIndicator(progress = { (questionIndex + if (selectedAnswer >= 0) 1 else 0).toFloat() / questions.size }, modifier = Modifier.fillMaxWidth())
+        }
+        if (finished) {
+            item {
+                Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)) {
+                    Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                        Text("Тест завершено!", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+                        Text("$score із ${questions.size} правильних відповідей", style = MaterialTheme.typography.titleLarge)
+                        Text(if (score == questions.size) "Чудово! Усі відповіді правильні." else "Гарна практика. Переглянь теми й спробуй ще раз.")
+                        Button(onClick = { questionIndex = 0; selectedAnswer = -1; score = 0; finished = false }) { Text("Пройти ще раз") }
+                    }
+                }
+            }
+        } else {
+            item { Text(question.prompt, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.SemiBold) }
+            items(question.options.size) { index ->
+                val chosen = selectedAnswer == index
+                val correct = index == question.correctIndex
+                OutlinedButton(
+                    onClick = {
+                        if (selectedAnswer == -1) {
+                            selectedAnswer = index
+                            if (correct) score++
+                        }
+                    },
+                    enabled = selectedAnswer == -1,
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        containerColor = if (selectedAnswer >= 0 && correct) MaterialTheme.colorScheme.primaryContainer
+                            else if (chosen && !correct) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.surface
+                    )
+                ) {
+                    Text(question.options[index], modifier = Modifier.fillMaxWidth())
+                }
+            }
+            if (selectedAnswer >= 0) {
+                item {
+                    Card {
+                        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                            Text(if (selectedAnswer == question.correctIndex) "Правильно! ✓" else "Не зовсім. Правильна відповідь виділена.")
+                            Text(question.explanation)
+                        }
+                    }
+                    Button(onClick = {
+                        if (questionIndex == questions.lastIndex) finished = true
+                        else { questionIndex++; selectedAnswer = -1 }
+                    }, modifier = Modifier.fillMaxWidth()) {
+                        Text(if (questionIndex == questions.lastIndex) "Побачити результат" else "Наступне питання")
+                    }
+                }
             }
         }
     }
