@@ -40,11 +40,13 @@ fun OfflineLabScreen(context: Context) {
         mutableStateOf(preferences.getString("lab_code_${exercises.first().id}", exercises.first().starterCode) ?: exercises.first().starterCode)
     }
     var result by remember { mutableStateOf<SwiftLabResult?>(null) }
+    var execution by remember { mutableStateOf<SwiftLabExecutionResult?>(null) }
 
     fun selectExercise(exercise: SwiftLabExercise) {
         selectedExercise = exercise
         code = preferences.getString("lab_code_${exercise.id}", exercise.starterCode) ?: exercise.starterCode
         result = null
+        execution = null
     }
 
     LazyColumn(
@@ -90,6 +92,7 @@ fun OfflineLabScreen(context: Context) {
                     code = it
                     preferences.edit().putString("lab_code_${selectedExercise.id}", it).apply()
                     result = null
+                    execution = null
                 },
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 10,
@@ -109,10 +112,17 @@ fun OfflineLabScreen(context: Context) {
                         code = selectedExercise.starterCode
                         preferences.edit().putString("lab_code_${selectedExercise.id}", code).apply()
                         result = null
+                        execution = null
                     },
                     modifier = Modifier.weight(1f)
                 ) { Text("Скинути") }
             }
+        }
+        item {
+            OutlinedButton(
+                onClick = { execution = SwiftLabInterpreter.execute(code) },
+                modifier = Modifier.fillMaxWidth()
+            ) { Text("Запустити навчальний приклад ▶") }
         }
         result?.let { check ->
             item {
@@ -130,13 +140,29 @@ fun OfflineLabScreen(context: Context) {
                 }
             }
         }
+        execution?.let { run ->
+            item {
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = if (run.success) MaterialTheme.colorScheme.secondaryContainer
+                        else MaterialTheme.colorScheme.errorContainer
+                    )
+                ) {
+                    Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text(if (run.success) "Результат виконання" else "Помилка навчального запуску", style = MaterialTheme.typography.titleMedium)
+                        if (run.success) Text(run.output, fontFamily = FontFamily.Monospace)
+                        else Text(run.error ?: "Невідома помилка")
+                    }
+                }
+            }
+        }
         item {
             Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text("Що вміє ця версія", style = MaterialTheme.typography.titleMedium)
-                    Text("• працює повністю офлайн\n• має навчальні шаблони\n• зберігає код локально\n• перевіряє базові вимоги вправ")
+                    Text("• працює повністю офлайн\n• має навчальні шаблони\n• зберігає код локально\n• перевіряє базові вимоги вправ\n• запускає обмежену навчальну підмножину")
                     Text(
-                        "Вона поки не компілює довільний текст і не показує всі помилки Swift. Для запуску справжнього скомпільованого Swift-коду використовуй екран «Swift на пристрої» нижче.",
+                        "Запуск підтримує базові let/var, числа, рядки, print, арифметику, if/else, масиви та for-in. Це навчальний інтерпретатор, а не повний Swift-компілятор. Для запуску справжнього скомпільованого Swift-коду використовуй екран «Swift на пристрої».",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
