@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 
 private enum class GuideTab(val title: String, val symbol: String) {
     HOME("Головна", "⌂"), TOPICS("Теми", "▤"), QUIZ("Тест", "?"), MORE("Ще", "⋯"),
-    GLOSSARY("Словник", "А"), PROGRESS("Прогрес", "✓"), SWIFT_RUNTIME("Swift", "▶")
+    GLOSSARY("Словник", "А"), PROGRESS("Прогрес", "✓"), SWIFT_LAB("Лабораторія", "⌘"), SWIFT_RUNTIME("Swift", "▶")
 }
 
 class MainActivity : ComponentActivity() {
@@ -58,7 +58,7 @@ private fun SwiftPocketGuideApp() {
                 TopAppBar(
                     title = {
                         Column {
-                            Text(selectedTopic?.title ?: moreDestination?.title ?: if (selectedTab == GuideTab.MORE) "Інші розділи" else "Swift Pocket Guide")
+                            Text(selectedTopic?.title ?: moreDestination?.title ?: if (selectedTab == GuideTab.MORE) "Інші розділи" else if (selectedTab == GuideTab.SWIFT_LAB) "Офлайн-лабораторія Swift" else "Swift Pocket Guide")
                             if (selectedTopic == null) Text("Кишеньковий довідник початківця", style = MaterialTheme.typography.labelSmall)
                         }
                     },
@@ -104,15 +104,17 @@ private fun SwiftPocketGuideApp() {
                         onBookmark = { toggle(bookmarks, topic.id, "bookmarks") { bookmarks = it } }
                     )
                 } else when (selectedTab) {
-                    GuideTab.HOME -> HomeScreen(completed.size, { selectedTab = GuideTab.TOPICS }, { selectedTab = GuideTab.QUIZ }, { selectedTab = GuideTab.MORE; moreDestination = GuideTab.SWIFT_RUNTIME }) { selectedTopic = it }
+                    GuideTab.HOME -> HomeScreen(completed.size, { selectedTab = GuideTab.TOPICS }, { selectedTab = GuideTab.QUIZ }, { selectedTab = GuideTab.MORE; moreDestination = GuideTab.SWIFT_LAB }) { selectedTopic = it }
                     GuideTab.TOPICS -> TopicsScreen(search, { search = it }, completed, bookmarks) { selectedTopic = it }
                     GuideTab.QUIZ -> QuizScreen()
+                    GuideTab.SWIFT_LAB -> OfflineLabScreen(context)
                     GuideTab.SWIFT_RUNTIME -> SwiftRuntimeScreen()
                     GuideTab.GLOSSARY -> GlossaryScreen(search, { search = it })
                     GuideTab.PROGRESS -> ProgressScreen(completed, bookmarks) { selectedTopic = it }
                     GuideTab.MORE -> when (moreDestination) {
                         GuideTab.GLOSSARY -> GlossaryScreen(search, { search = it })
                         GuideTab.PROGRESS -> ProgressScreen(completed, bookmarks) { selectedTopic = it }
+                        GuideTab.SWIFT_LAB -> OfflineLabScreen(context)
                         GuideTab.SWIFT_RUNTIME -> SwiftRuntimeScreen()
                         else -> MoreScreen { moreDestination = it }
                     }
@@ -125,7 +127,7 @@ private fun SwiftPocketGuideApp() {
 @Composable
 private fun HomeScreen(
     completedCount: Int, onOpenTopics: () -> Unit, onOpenQuiz: () -> Unit,
-    onOpenSwiftRuntime: () -> Unit, onOpenTopic: (HandbookTopic) -> Unit
+    onOpenLab: () -> Unit, onOpenTopic: (HandbookTopic) -> Unit
 ) {
     LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         item {
@@ -137,7 +139,7 @@ private fun HomeScreen(
                     Spacer(Modifier.height(16.dp))
                     Button(onClick = onOpenTopics) { Text("Почати навчання") }
                     OutlinedButton(onClick = onOpenQuiz, modifier = Modifier.fillMaxWidth()) { Text("Перевірити знання →") }
-                    Button(onClick = onOpenSwiftRuntime, modifier = Modifier.fillMaxWidth()) { Text("Відкрити Swift на пристрої ▶") }
+                    Button(onClick = onOpenLab, modifier = Modifier.fillMaxWidth()) { Text("Відкрити офлайн-лабораторію ▶") }
                 }
             }
         }
@@ -188,6 +190,14 @@ private fun MoreScreen(onOpen: (GuideTab) -> Unit) {
                 Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Text("✓ Прогрес і закладки", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
                     Text("Вивчені теми та збережені матеріали.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+        }
+        item {
+            Card(onClick = { onOpen(GuideTab.SWIFT_LAB) }, modifier = Modifier.fillMaxWidth()) {
+                Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text("⌘ Офлайн-лабораторія Swift", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                    Text("Пиши й перевіряй навчальні вправи прямо на телефоні.", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
         }
