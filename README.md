@@ -53,11 +53,16 @@
 
 Для навчання з телефона є окремий офлайн-застосунок **[Swift Pocket Guide](android-handbook/README.md)** на Kotlin та Jetpack Compose. У ньому є короткі пояснення Swift, приклади коду, пошук, словник, закладки й локальний прогрес. Він не запускає Swift-код і не замінює основний курс.
 
+## Якщо ти зовсім новачок
+
+Почни з [гіда «Старт із нуля»](docs/START-HERE.md). У ньому пояснено, що таке Swift, термінал, компілятор, Git і Swift Package Manager, а також є перше заняття на 30 хвилин і розділ із типовими помилками. Для швидкого повторення термінів використовуй [словник Swift](docs/GLOSSARY.md).
+
 ## З чого почати
 
-1. Пройди [урок 0 — підготовка середовища](lessons/00-platform-setup.md).
-2. Виконуй [GitHub Issues #1–#8](https://github.com/juv4uk/swift-learning/issues) — це твій журнал навчання.
-3. Після восьмого тижня переходь до [Apple-етапу](docs/MACBOOK-ROADMAP.md) та Issues #9–#12.
+1. Якщо це перше знайомство з програмуванням, пройди [«Старт із нуля»](docs/START-HERE.md).
+2. Пройди [урок 0 — підготовка середовища](lessons/00-platform-setup.md).
+3. Виконуй [GitHub Issues #1–#8](https://github.com/juv4uk/swift-learning/issues) — це твій журнал навчання.
+4. Після восьмого тижня переходь до [Apple-етапу](docs/MACBOOK-ROADMAP.md) та Issues #9–#12.
 
 ## Швидкий старт
 
