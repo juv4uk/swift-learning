@@ -6,6 +6,7 @@ data class SwiftLabExercise(
     val title: String,
     val instruction: String,
     val starterCode: String,
+    val expectedOutput: String,
     val checks: List<SwiftLabCheck>
 )
 
@@ -24,6 +25,7 @@ object SwiftLabContent {
             title = "Привітання",
             instruction = "Створи константу name і виведи привітання через print.",
             starterCode = "let name = \"Оля\"\nprint(\"Привіт, \\(name)!\")",
+            expectedOutput = "Привіт, Оля!",
             checks = listOf(
                 SwiftLabCheck("Є константа name", { Regex("\\blet\\s+name\\b").containsMatchIn(it) }),
                 SwiftLabCheck("Є виклик print", { Regex("\\bprint\\s*\\(").containsMatchIn(it) }),
@@ -35,6 +37,7 @@ object SwiftLabContent {
             title = "Змінна і число",
             instruction = "Створи var minutes, збільш значення та виведи його.",
             starterCode = "var minutes = 30\nminutes += 15\nprint(minutes)",
+            expectedOutput = "45",
             checks = listOf(
                 SwiftLabCheck("Є змінна minutes", { Regex("\\bvar\\s+minutes\\b").containsMatchIn(it) }),
                 SwiftLabCheck("Значення змінюється", { Regex("minutes\\s*(\\+=|-=|=)").containsMatchIn(it) }),
@@ -46,6 +49,7 @@ object SwiftLabContent {
             title = "Умова",
             instruction = "Перевір через if, чи залишилися хвилини до навчальної цілі.",
             starterCode = "let completed = 3\nlet target = 5\n\nif completed < target {\n    print(\"Потрібно ще вчитися\")\n} else {\n    print(\"Ціль виконано\")\n}",
+            expectedOutput = "Потрібно ще вчитися",
             checks = listOf(
                 SwiftLabCheck("Є if", { Regex("\\bif\\b").containsMatchIn(it) }),
                 SwiftLabCheck("Є порівняння", { Regex("(==|!=|<=|>=|<|>)").containsMatchIn(it) }),
@@ -58,6 +62,7 @@ object SwiftLabContent {
             title = "Масив тем",
             instruction = "Створи масив topics і пройди його циклом for-in.",
             starterCode = "let topics = [\"let і var\", \"Функції\", \"Optional\"]\n\nfor topic in topics {\n    print(topic)\n}",
+            expectedOutput = "let і var\nФункції\nOptional",
             checks = listOf(
                 SwiftLabCheck("Є масив topics", { Regex("\\b(let|var)\\s+topics\\s*=\\s*\\[").containsMatchIn(it) }),
                 SwiftLabCheck("Є цикл for-in", { Regex("\\bfor\\s+\\w+\\s+in\\s+topics").containsMatchIn(it) }),

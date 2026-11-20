@@ -19,8 +19,8 @@ android {
         minSdk = 26
         targetSdk = 36
         // Increase versionCode for every published Android update.
-        versionCode = 10
-        versionName = "1.1.9"
+        versionCode = 11
+        versionName = "1.2.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         ndk { abiFilters += "arm64-v8a" }
     }
